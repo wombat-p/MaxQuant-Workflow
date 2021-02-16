@@ -1,0 +1,54 @@
+name: Docker image build and test
+# This workflow is triggered on pushes and PRs to the repository.
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+  release:
+    types: [published]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      NXF_VER: ${{ matrix.nxf_ver }}
+      NXF_ANSI_LOG: false
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+      CAPSULE_LOG: none
+      WORKFLOW: maxquant-pipeline
+    strategy:
+      matrix:
+        # Nextflow versions: check pipeline minimum and current latest
+        nxf_ver: ['20.04.0', '']
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build the Docker image
+      working-directory: Nextflow
+      run: docker build . --file Dockerfile --tag wombatp/${WORKFLOW}:dev
+
+    - name: Push Docker image to DockerHub (dev)
+      run: |
+          echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+          docker push wombatp/${WORKFLOW}:dev
+
+    - name: Pull docker image
+      run: |
+          docker pull wombatp/${WORKFLOW}:dev
+
+    - name: Install Nextflow
+      run: |
+          wget -qO- get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin/
+
+    - name: Run pipeline with test data
+      working-directory: Nextflow
+        # For example: adding multiple test runs with different parameters
+        # Remember that you can parallelise this by using strategy.matrix
+      run: |
+          nextflow run main.nf -profile test,docker
