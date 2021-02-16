@@ -1,0 +1,82 @@
+Feb-04 19:05:34.900 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf -profile docker,test -resume
+Feb-04 19:05:35.066 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 20.10.0
+Feb-04 19:05:35.085 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [reverent_mercator] - revision: 72143db21a
+Feb-04 19:05:35.119 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /home/veits/devel/Bioinformatics/ELIXIR_EDAM/IS_Benchmarking/MaxQuant/Nextflow/nextflow.config
+Feb-04 19:05:35.120 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /home/veits/devel/Bioinformatics/ELIXIR_EDAM/IS_Benchmarking/MaxQuant/Nextflow/nextflow.config
+Feb-04 19:05:35.154 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `docker,test`
+Feb-04 19:05:36.840 [main] DEBUG nextflow.config.ConfigBuilder - Available config profiles: [debug, test, conda, awsbatch, singularity, docker]
+Feb-04 19:05:36.929 [main] DEBUG nextflow.Session - Session uuid: 3c927f21-2fdc-4b11-9b1a-fd12ca42c554
+Feb-04 19:05:36.929 [main] DEBUG nextflow.Session - Run name: reverent_mercator
+Feb-04 19:05:36.930 [main] DEBUG nextflow.Session - Executor pool size: 12
+Feb-04 19:05:36.982 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 20.10.0 build 5430
+  Created: 01-11-2020 15:14 UTC (16:14 CEST)
+  System: Linux 5.4.0-62-generic
+  Runtime: Groovy 3.0.5 on OpenJDK 64-Bit Server VM 11.0.9.1+1-Ubuntu-0ubuntu1.20.04
+  Encoding: UTF-8 (UTF-8)
+  Process: 929045@adm-125488 [127.0.0.1]
+  CPUs: 12 - Mem: 31.2 GB (5.9 GB) - Swap: 976 MB (125.7 MB)
+Feb-04 19:05:37.049 [main] DEBUG nextflow.Session - Work-dir: /home/veits/devel/Bioinformatics/ELIXIR_EDAM/IS_Benchmarking/MaxQuant/Nextflow/work [ext2/ext3]
+Feb-04 19:05:37.049 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /home/veits/devel/Bioinformatics/ELIXIR_EDAM/IS_Benchmarking/MaxQuant/Nextflow/bin
+Feb-04 19:05:37.121 [main] DEBUG nextflow.Session - Observer factory: TowerFactory
+Feb-04 19:05:37.125 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Feb-04 19:05:37.434 [main] DEBUG nextflow.Session - Session start invoked
+Feb-04 19:05:38.156 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Feb-04 19:05:38.172 [main] DEBUG nextflow.Session - Workflow process names [dsl1]: run_maxquant, run_normalyzerde, run_sdrf
+Feb-04 19:05:38.177 [main] WARN  nextflow.script.ScriptBinding - Access to undefined parameter `match` -- Initialise it to a default value eg. `params.match = some_value`
+Feb-04 19:05:38.191 [main] WARN  nextflow.Nextflow - No match choice. Make sure to choose and write '--match'
+Feb-04 19:05:38.352 [main] WARN  nextflow.extension.IntoOp - The `into` operator should be used to connect two or more target channels -- consider to replace it with `.set { input_exp_design }`
+Feb-04 19:05:38.472 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Feb-04 19:05:38.473 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Feb-04 19:05:38.480 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Feb-04 19:05:38.513 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=12; memory=31.2 GB; capacity=12; pollInterval=100ms; dumpInterval=5m
+Feb-04 19:05:38.678 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Feb-04 19:05:38.678 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Feb-04 19:05:38.691 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Feb-04 19:05:38.692 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Feb-04 19:05:38.705 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Feb-04 19:05:38.705 [main] DEBUG nextflow.Session - Session await
+Feb-04 19:05:39.004 [Actor Thread 3] INFO  nextflow.processor.TaskProcessor - [c7/2b0b2c] Cached process > run_sdrf (1)
+Feb-04 19:05:39.062 [Actor Thread 5] INFO  nextflow.processor.TaskProcessor - [33/fc8ecb] Cached process > run_maxquant (1)
+Feb-04 19:05:39.204 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Feb-04 19:05:39.211 [Task submitter] INFO  nextflow.Session - [71/0af621] Submitted process > run_normalyzerde (1)
+Feb-04 19:05:40.496 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 3; name: run_normalyzerde (1); status: COMPLETED; exit: 1; error: -; workDir: /home/veits/devel/Bioinformatics/ELIXIR_EDAM/IS_Benchmarking/MaxQuant/Nextflow/work/71/0af621b78336efc7ec1300eb2a0c19]
+Feb-04 19:05:40.536 [Task monitor] ERROR nextflow.processor.TaskProcessor - Error executing process > 'run_normalyzerde (1)'
+
+Caused by:
+  Process `run_normalyzerde (1)` terminated with an error exit status (1)
+
+Command executed:
+
+  # merging experimental design file from sdrf parser with actual design
+      Rscript -e 'A<-read.csv("exp_design.tsv",sep="\t"); B<- read.csv("ABRF_test.txt", sep="\t"); B$file <- sub(".raw","",B$file); names(B) <- c("file","group");A$Experiment <- make.names(A$Experiment);C<-merge(A,B,by.x="Name",by.y="file"); write.table(unique(C[,c("Experiment","group")]), "full_design.txt",sep="\t", row.names=F)'
+      Rscript -e 'NormalyzerDE::normalyzer(jobName="PXD001819", designPath="full_design.txt", dataPath="proteinGroups.txt", zeroToNA = TRUE, inputFormat = "maxquantprot", outputDir="./results",sampleColName="Experiment")'
+      Rscript -e 'NormalyzerDE::normalyzerDE(jobName="PXD001819", comparisons=c("1-2","2-3"), designPath="full_design.txt", dataPath="./results/PXD001819/log2-normalized.txt", outputDir="./results")'
+
+Command exit status:
+  1
+
+Command output:
+  ARGUMENT '");~+~B<-~+~read.csv("ABRF_test.txt",~+~sep="' __ignored__
+  
+  ARGUMENT '");~+~B$file~+~<-~+~sub(".raw","",B$file);~+~names(B)~+~<-~+~c("file","group");A$Experiment~+~<-~+~make.names(A$Experiment);C<-merge(A,B,by.x="Name",by.y="file");~+~write.table(unique(C[,c("Experiment","group")]),~+~"full_design.txt",sep="' __ignored__
+  
+  ARGUMENT '",~+~row.names=F)' __ignored__
+
+Command error:
+  WARNING: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.
+  Error: unexpected end of input
+  Execution halted
+
+Work dir:
+  /home/veits/devel/Bioinformatics/ELIXIR_EDAM/IS_Benchmarking/MaxQuant/Nextflow/work/71/0af621b78336efc7ec1300eb2a0c19
+
+Tip: when you have fixed the problem you can continue the execution adding the option `-resume` to the run command line
+Feb-04 19:05:40.543 [main] DEBUG nextflow.Session - Session await > all process finished
+Feb-04 19:05:40.547 [Task monitor] INFO  nextflow.Session - Execution cancelled -- Finishing pending tasks before exit
+Feb-04 19:05:40.554 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Feb-04 19:05:40.556 [main] INFO  nextflow.Nextflow - Oops .. something went wrong
+Feb-04 19:05:40.565 [main] DEBUG nextflow.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=0; failedCount=1; ignoredCount=0; cachedCount=2; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=0ms; failedDuration=2.5s; cachedDuration=1h 36m 34s;loadCpus=0; loadMemory=0; peakRunning=1; peakCpus=2; peakMemory=16 GB; ]
+Feb-04 19:05:40.757 [main] DEBUG nextflow.CacheDB - Closing CacheDB done
+Feb-04 19:05:40.762 [main] DEBUG nextflow.util.SpuriousDeps - AWS S3 uploader shutdown
+Feb-04 19:05:40.787 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye
