@@ -31,6 +31,12 @@ if (comps == "") {
 }
 
 # run Normalyzer
+if (min(table(final_exp[,"group"])) > 1) {
 NormalyzerDE::normalyzer(jobName="Normalyzer", designPath="full_design.txt", dataPath="protein_file.txt", zeroToNA = TRUE, inputFormat = "maxquantprot", outputDir="./",sampleColName="Experiment",requireReplicates=F)
 print("Now running differential expression analysis")
 NormalyzerDE::normalyzerDE(jobName="Normalyzer", comparisons=comps, designPath="full_design.txt", dataPath=paste0("./Normalyzer/",normalyzerMethod,"-normalized.txt"), outputDir="./", sampleCol="Experiment")
+} else {
+NormalyzerDE::normalyzer(jobName="Normalyzer", designPath="full_design.txt", dataPath="protein_file.txt", zeroToNA = TRUE, inputFormat = "maxquantprot", outputDir="./",sampleColName="Experiment",requireReplicates=F,skipAnalysis=T)
+  print("No statistical testing as at least one sample group with only 1 replicate")
+write.csv(NA,"Normalyzer/Normalyzer_stats.tsv")
+}
