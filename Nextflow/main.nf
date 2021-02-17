@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 /*
 ========================================================================================
-                         nf-core/MaxQuant
+                         MaxQuant-Pipeline
 ========================================================================================
 (NOT YET A nf-core!)
  #### Homepage / Documentation
@@ -28,7 +28,6 @@ Mandatory arguments:
 
 
 Other options:
-    --numthreads    each thread needs at least 2 GB of RAM,number of threads should be ≤ number of logical cores available          
     --peptidefdr    posterior error probability calculation based on target-decoy search, default=0.01 
     --proteinfdr    protein score = product of peptide PEPs (one for each sequence)', default=0.01
     --match         "True" via matching between runs to boosts number of identifications, default = True
@@ -151,7 +150,6 @@ process run_maxquant {
     sed -i "s|PLACEHOLDER|\$PWD/|g" "${mqparameters}"
     mkdir temp
     maxquant ${mqparameters}
-    mkdir -p "${params.outdir}/${params.mqResults}"
     cp -R "\$PWD/combined/txt" "${params.outdir}"
     """        
 }
@@ -171,6 +169,7 @@ process run_normalyzerde {
 
     output:
 	file "Normalyzer/Normalyzer_stats.tsv" into normalyzer_out
+	file "Normalyzer/${params.normalyzerMethod}-normalized.txt" into normalyzer_out2
 
     script:
     """
@@ -178,7 +177,7 @@ process run_normalyzerde {
      cp "${exp_file2}" exp_file2.tsv 
      cp "${protein_file}" protein_file.txt
      Rscript $baseDir/runNormalyzer.R --comps="${params.comparisons}" --method="${params.normalyzerMethod}"
-     cp -R "\$PWD/Normalyzer" "${params.outdir}"
+     cp -R Normalyzer "${params.outdir}"
     """   
 }
 
