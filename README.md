@@ -34,7 +34,7 @@ the first condition
 Just make sure to update the paths in the configuration file, and then run as
 
 ```
-nextflow run main.nf --raws 'RAW FILES OR FOLDER WITH RAW FILES' --fasta 'SPECIFYFOLDER/yeast_UPS.fasta' --sdrf data/sdrf_UPS.tsv --experiment_design 'SPECIFYFOLDER/pxd001819.txt' 
+nextflow run main.nf --raws 'RAW FILES OR FOLDER WITH RAW FILES' --fasta 'SPECIFYFOLDER/yeast_UPS.fasta' --sdrf data/sdrf_UPS.tsv --experiment_design 'SPECIFYFOLDER/pxd001819.txt' -profile docker
 ```
 
 Still missing: parameter for tolerances, enzymes and PTMs, possibility to run without sdrf file
