@@ -68,6 +68,7 @@ params.match = "True"
 
 // NormalyzerDE parameters
 // Which groups to compare
+params.run_statistics = true
 params.comparisons = ''
 params.normalyzerMethod = "log2"
 
@@ -163,9 +164,6 @@ process run_maxquant {
 */
 process run_normalyzerde {
 
-    when:
-      params.run_statistics
-
     publishDir "${params.outdir}"
 
     input:
@@ -177,6 +175,9 @@ process run_normalyzerde {
     output:
 	file "Normalyzer/Normalyzer_stats.tsv" into normalyzer_out
 	file "Normalyzer/${params.normalyzerMethod}-normalized.txt" into normalyzer_out2
+
+    when:
+      params.run_statistics
 
     script:
     """
