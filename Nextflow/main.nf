@@ -35,10 +35,14 @@ Other options:
     --email         Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits
     --experiment_design               Text-file containing 2 columns: first with raw file names and second with names for 
 experimental conditions
+    --run_statistics                  Either true or false
     --normalyzerMethod Method for normalization of samples: can be log2, CycLoess, median, mean, Quantile, GI, RLR or VSN
     --comparisons   Comparisons for statistical tests. Needs to be in the format "Cond2-Cond1,Cond3-Cond1" assuming that CondN are the conditions in the experimental design file. 
+Run statistics
+
 
     -name           Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic.
+
 
 """.stripIndent()
 }
@@ -158,6 +162,9 @@ process run_maxquant {
 * STEP 3 - Run NormalyzerDE
 */
 process run_normalyzerde {
+
+    when:
+      params.run_statistics
 
     publishDir "${params.outdir}"
 
