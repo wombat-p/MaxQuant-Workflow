@@ -30,12 +30,12 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Build the Docker image (push)
-      working-directory: Nextflow
+      working-directory: Nextflow/docker
       if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
       run: docker build . --file Dockerfile --tag wombatp/${WORKFLOW}:dev
 
     - name: Build Docker image (release)
-      working-directory: Nextflow
+      working-directory: Nextflow/docker
       if: ${{ github.event_name == 'release' }}
       run: |
           version=${{ github.ref }}
