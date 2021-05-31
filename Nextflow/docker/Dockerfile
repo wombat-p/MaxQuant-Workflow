@@ -1,5 +1,5 @@
 FROM nfcore/base
-LABEL authors="Niclas Kildegaard Nielsen and Veit Schwämmle" \
+LABEL authors="Niclas Kildegaard Nielsen, Veit Schwämmle and Julian Uszkoreit" \
       description="Docker image containing all requirements for maxquant pipeline"
 
 COPY environment.yml /

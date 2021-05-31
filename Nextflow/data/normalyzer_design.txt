@@ -1,3 +1,0 @@
-sample	group
-Sample1	Test
-Sample1	Test

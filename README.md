@@ -4,6 +4,8 @@ This workflow is based on Nextflow, running with SDRF implemented. Normalization
 ## Content
 _Nextflow folder_: The workflow implementation
 
+_data folder:_ additional data to run the UPS data set (NOT including the RAW files)
+
 _Results folder_: Results for the UPS data set.
 
 
@@ -34,7 +36,7 @@ the first condition
 Just make sure to update the paths in the configuration file, and then run as
 
 ```
-nextflow run main.nf --raws 'RAW FILES OR FOLDER WITH RAW FILES' --fasta 'SPECIFYFOLDER/yeast_UPS.fasta' --sdrf data/sdrf_UPS.tsv --experiment_design 'SPECIFYFOLDER/pxd001819.txt' -profile docker
+nextflow run main.nf --raws '/PATH/TO/*.raw' --fasta 'SPECIFYFOLDER/yeast_UPS.fasta' --sdrf data/sdrf_UPS.tsv --experiment_design 'SPECIFYFOLDER/pxd001819.txt' --max_cpus 8 --max_memory 8GB -profile docker  -with-report -with-trace -with-timeline
 ```
 
 Still missing: parameter for tolerances, enzymes and PTMs, possibility to run without sdrf file
