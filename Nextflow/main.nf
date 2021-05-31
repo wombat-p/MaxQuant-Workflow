@@ -50,10 +50,10 @@ Run statistics
 /*
 * Read and setup the variables
 */ 
-params.raws = params.raws ?: { log.error "No read data provided. Make sure you have used the '--raws' option."; exit 1 }()
-params.sdrf = params.sdrf ?: {log.error "No read data provided. Make sure you have used the '--sdrf' option."; exit 1}()
-params.outdir = params.outdir ?: { log.warn "No output directory provided. Will put the results into './results'"; return "./results" }()
+params.raws = params.raws ?: { log.error "No raw data provided. Make sure you have used the '--raws' option."; exit 1 }()
+params.sdrf = params.sdrf ?: {log.error "No SDRF file provided. Make sure you have used the '--sdrf' option."; exit 1}()
 params.fasta = params.fasta ?: { log.error "No fasta file provided. Make sure you have used the '--fasta' option."; exit 1}()
+params.outdir = params.outdir ?: { log.warn "No output directory provided. Will put the results into './results'"; return "./results" }()
  
 /*
 * Define the default paramaters. 
@@ -83,50 +83,51 @@ params.email = false
 params.plaintext_email = false
 
 
-
 // Has the run name been specified by the user?
 //  this has the bonus effect of catching both -name and --name
 custom_runName = params.name
 if( !(workflow.runName ==~ /[a-z]+_[a-z]+/) ){
-  custom_runName = workflow.runName
+    custom_runName = workflow.runName
 }
 
 /*
 * Generate the channels for the raw files
 */ 
-Channel 
-    .fromPath (params.raws).into {input_raw; input_raw2}
+input_raw_maxquant = Channel.fromPath(params.raws)
 
 /*
 * Generate the channels for the sdrf files
 */ 
-Channel 
-    .fromPath (params.sdrf).into {input_sdrf; input_sdrf2}
+input_sdrf_parse = Channel.fromPath (params.sdrf)
 
 /*
 * Generate the channels for the fasta file
 */ 
-Channel
-    .fromPath (params.fasta).into {input_fasta; input_fasta2}
+input_fasta = Channel.fromPath (params.fasta)
+input_fasta.into { input_fasta_parse; input_fasta_maxquant }
 
 /*
 * Generate channel for experimental design file
 */
-Channel
-     .fromPath(params.experiment_design).into {input_exp_design}
+input_exp_design = Channel.fromPath(params.experiment_design)
+
 
 /* 
 * STEP 1 - Generate the parameter and experimental design for maxquant through sdrf
 */
 process run_sdrf {
-    publishDir "${params.outdir}"
+    label 'process_high'
+    // this is run as high to pass the (maximal) number of threads (which will be 4 as default without label)
+
+    publishDir "${params.outdir}/params", mode: 'copy'
+    
     input: 
-        path sdrf_file from input_sdrf
-        path fasta_file from input_fasta
+    file sdrf_file from input_sdrf_parse
+    file fasta_file from input_fasta_parse
     
     output:
-        file "mqpar.xml" into outParameters
-        file "exp_design.tsv" into outExpDesign
+    file "mqpar.xml" into mq_parameters
+    file "exp_design.tsv" into exp_design_parsed
 
     script: 
     """
@@ -138,57 +139,57 @@ process run_sdrf {
 * STEP 2 - Run maxQuant with parameters from mqpar
 */
 process run_maxquant {
-   
-    publishDir "${params.outdir}"
+    label 'process_high'
 
+    publishDir "${params.outdir}/maxq", mode: 'copy'
+    
     input:
-        file rawfile from input_raw2.collect()
-	file fastafile from input_fasta2
-        path mqparameters from outParameters
+    file rawfile from input_raw_maxquant.collect()
+	file fastafile from input_fasta_maxquant
+    file mqparameters from mq_parameters
 
     output:
-        file "combined/txt/proteinGroups.txt" into input_proteinGroups	
-
-
+    file "combined/txt/proteinGroups.txt" into protein_groups
+    
     script:
-    """ 
+    """
     sed -i "s|PLACEHOLDER|\$PWD/|g" "${mqparameters}"
     mkdir temp
     maxquant ${mqparameters}
     cp -R "\$PWD/combined/txt" "${params.outdir}"
-    """        
+    """
 }
 
 /*
 * STEP 3 - Run NormalyzerDE
 */
 process run_normalyzerde {
+    label 'process_low'
+    label 'process_single_thread'
 
-    publishDir "${params.outdir}"
+    publishDir "${params.outdir}/normalyzerde", mode:'copy'
 
     input:
-        path sdrf_file from input_sdrf2
-        path exp_file from outExpDesign
-        path protein_file from input_proteinGroups
-        file exp_file2 from input_exp_design
+    file exp_file_parsed from exp_design_parsed
+    file exp_file_input from input_exp_design
+    file protein_file from protein_groups
 
     output:
-	file "Normalyzer/Normalyzer_stats.tsv" into normalyzer_out
-	file "Normalyzer/${params.normalyzerMethod}-normalized.txt" into normalyzer_out2
+	file "Normalyzer/Normalyzer_stats.tsv" into normalyzer_stats
+	file "Normalyzer/${params.normalyzerMethod}-normalized.txt" into normalyzer_normalized
 
     when:
-      params.run_statistics
+    params.run_statistics
 
     script:
     """
-     cp "${exp_file}" exp_file.tsv
-     cp "${exp_file2}" exp_file2.tsv 
-     cp "${protein_file}" protein_file.txt
-     Rscript $baseDir/runNormalyzer.R --comps="${params.comparisons}" --method="${params.normalyzerMethod}"
-     cp -R Normalyzer "${params.outdir}"
-    """   
+    cp "${exp_file_parsed}" exp_file.tsv
+    cp "${exp_file_input}" exp_file2.tsv 
+    cp "${protein_file}" protein_file.txt
+    Rscript $baseDir/scripts/runNormalyzer.R --comps="${params.comparisons}" --method="${params.normalyzerMethod}"
+    cp -R Normalyzer "${params.outdir}"
+    """
 }
-
 
 workflow.onComplete {
     log.info ( workflow.success ? "\nDone! Open the files in the following folder --> $params.outdir\n" : "Oops .. something went wrong" )
