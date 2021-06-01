@@ -1,0 +1,4 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	ef/af89e3	4114138	run_sdrf (1)	COMPLETED	0	2021-05-31 17:14:17.028	6.7s	5.1s	99.5%	107.5 MB	411.3 MB	29.1 MB	22.9 KB
+2	85/6d9ae8	4114751	run_maxquant (1)	COMPLETED	0	2021-05-31 17:14:23.796	3h 29m 55s	3h 29m 44s	700.8%	27.6 GB	61.4 GB	880.1 GB	294.8 GB
+3	bd/ddca1a	231510	run_normalyzerde (1)	COMPLETED	0	2021-05-31 20:44:18.603	1m 9s	59.8s	80.4%	869.7 MB	2.3 GB	74.1 MB	30.2 MB
