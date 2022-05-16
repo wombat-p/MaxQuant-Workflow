@@ -1,0 +1,54 @@
+name: getsoftwareversions
+description: The software scrapes and combines the information to the software used in the pipeline.
+keywords:
+  - sort
+tools:
+  - getsoftwareversions:
+      description: The software scrapes and combines the information to the software used in the pipeline.
+      homepage: 
+      documentation: 
+      tool_dev_url: 
+      doi: ""
+      licence: 
+params: 
+  - outdir:
+      type: string
+      description: |
+          The pipeline's output directory. By default, the module will
+          output files into `$params.outdir/<SOFTWARE>`
+  - publish_dir_mode:
+      type: string
+      description: |
+          Value for the Nextflow `publishDir` mode parameter.
+          Available: symlink, rellink, link, copy, copyNoFollow, move.
+  - enable_conda:
+      type: boolean
+      description: |
+          Run the module with Conda using the software specified
+          via the `conda` directive
+  - singularity_pull_docker_container:
+      type: boolean
+      description: |
+          Instead of directly downloading Singularity images for use with Singularity,
+          force the workflow to pull and convert Docker containers instead.
+input:
+  - versions:
+      type: path
+      description: |
+        Informtion for different version numbers
+        of the software packages
+output:
+  - csv:
+      type: file
+      description: |
+        File containing information of 
+        software versions
+      pattern: "*.csv"
+  - yaml:
+      type: file
+      description: File containing software version
+      pattern: "*.yaml"
+
+
+authors:
+  - "@nicni16"

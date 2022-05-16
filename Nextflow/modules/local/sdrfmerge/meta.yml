@@ -1,0 +1,64 @@
+name: sdrfpipelines
+
+description: The SDRF pipelines provide a set of tools to validate and convert SDRF files to different workflow configuration files such as MSstats,OpenMS and MaxQuant.
+keywords:
+  - convert
+tools:
+  - sdrfpipelines:
+      
+      description: Translate, convert SDRF to configuration pipelines
+      homepage: https://github.com/bigbio/sdrf-pipelines
+      documentation: https://github.com/bigbio/sdrf-pipelines
+      tool_dev_url: https://github.com/bigbio/sdrf-pipelines
+      doi: ""
+      licence: ['Apache 2']
+params: 
+  - outdir:
+      type: string
+      description: |
+          The pipeline's output directory. By default, the module will
+          output files into `$params.outdir/<SOFTWARE>`
+  - publish_dir_mode:
+      type: string
+      description: |
+          Value for the Nextflow `publishDir` mode parameter.
+          Available: symlink, rellink, link, copy, copyNoFollow, move.
+  - enable_conda:
+      type: boolean
+      description: |
+          Run the module with Conda using the software specified
+          via the `conda` directive
+  - singularity_pull_docker_container:
+      type: boolean
+      description: |
+          Instead of directly downloading Singularity images for use with Singularity,
+          force the workflow to pull and convert Docker containers instead.
+input:
+   - sdrf:
+      type: file
+      description: sdrf file
+      pattern: "*.{tsv}"
+  - fasta:
+      type: file
+      description: Fasta file of reference genome
+      pattern: "*.fasta"
+
+output:
+  - version:
+      type: file
+      description: File containing software version
+      pattern: "*.{version.txt}"
+  - xml:
+      type: file
+      description: Create experimental file
+      pattern: "*.{xml}"
+  - tsv:
+      type: file
+      description: Exp design
+      pattern: "*.{tsv}"
+  - warning:
+      type: file
+      description: Warning from the file parser
+      pattern: "*.{txt}"
+authors:
+  - "@veitveit"
