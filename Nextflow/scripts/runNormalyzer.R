@@ -19,7 +19,7 @@ A$Experiment <- make.names(A$Experiment);
 C<-merge(A,B,by.x="Name",by.y="file");
 final_exp <- unique(C[,c("Experiment","group")])
 num_cond <- nrow(final_exp)
-write.table(final_exp, "full_design.txt",sep="\t", row.names=F,quote=F)
+write.table(final_exp, "Normalyzer_design.tsv",sep="\t", row.names=F,quote=F)
 
 # comparison set to everything versus first
 if (comps == "") {
@@ -32,11 +32,15 @@ if (comps == "") {
 
 # run Normalyzer
 if (min(table(final_exp[,"group"])) > 1) {
-NormalyzerDE::normalyzer(jobName="Normalyzer", designPath="full_design.txt", dataPath="protein_file.txt", zeroToNA = TRUE, inputFormat = "maxquantprot", outputDir="./",sampleColName="Experiment",requireReplicates=F)
-print("Now running differential expression analysis")
-NormalyzerDE::normalyzerDE(jobName="Normalyzer", comparisons=comps, designPath="full_design.txt", dataPath=paste0("./Normalyzer/",normalyzerMethod,"-normalized.txt"), outputDir="./", sampleCol="Experiment")
+   NormalyzerDE::normalyzer(jobName="NormalyzerProteins", designPath="Normalyzer_design.tsv", dataPath="protein_file.txt", zeroToNA = TRUE, inputFormat = "maxquantprot", outputDir="./",sampleColName="Experiment",requireReplicates=F)
+   NormalyzerDE::normalyzer(jobName="NormalyzerPeptides", designPath="Normalyzer_design.tsv", dataPath="peptide_file.txt", zeroToNA = TRUE, inputFormat = "maxquantpep", outputDir="./",sampleColName="Experiment",requireReplicates=F)
+   print("Now running differential expression analysis")
+   NormalyzerDE::normalyzerDE(jobName="NormalyzerProteins", comparisons=comps, designPath="Normalyzer_design.tsv", dataPath=paste0("./NormalyzerProteins/",normalyzerMethod,"-normalized.txt"), outputDir="./", sampleCol="Experiment", leastRepCount="0")
+   NormalyzerDE::normalyzerDE(jobName="NormalyzerPeptides", comparisons=comps, designPath="Normalyzer_design.tsv", dataPath=paste0("./NormalyzerPeptides/",normalyzerMethod,"-normalized.txt"), outputDir="./", sampleCol="Experiment", leastRepCount="0")
 } else {
-NormalyzerDE::normalyzer(jobName="Normalyzer", designPath="full_design.txt", dataPath="protein_file.txt", zeroToNA = TRUE, inputFormat = "maxquantprot", outputDir="./",sampleColName="Experiment",requireReplicates=F,skipAnalysis=T)
+  NormalyzerDE::normalyzer(jobName="NormalyzerProteins", designPath="Normalyzer_design.txt", dataPath="protein_file.tsv", zeroToNA = TRUE, inputFormat = "maxquantprot", outputDir="./",sampleColName="Experiment",requireReplicates=F,skipAnalysis=T)
+  NormalyzerDE::normalyzer(jobName="NormalyzerPeptides", designPath="Normalyzer_design.txt", dataPath="peptide_file.tsv", zeroToNA = TRUE, inputFormat = "maxquantpep", outputDir="./",sampleColName="Experiment",requireReplicates=F,skipAnalysis=T)
   print("No statistical testing as at least one sample group with only 1 replicate")
-write.csv(NA,"Normalyzer/Normalyzer_stats.tsv")
+  write.csv(NA,"NormalyzerProteins/Normalyzer_stats.tsv")
+  write.csv(NA,"NormalyzerPeptides/Normalyzer_stats.tsv")
 }

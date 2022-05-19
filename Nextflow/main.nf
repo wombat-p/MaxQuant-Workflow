@@ -145,11 +145,13 @@ process run_maxquant {
     
     input:
     file rawfile from input_raw_maxquant.collect()
-	file fastafile from input_fasta_maxquant
+    file fastafile from input_fasta_maxquant
     file mqparameters from mq_parameters
 
     output:
     file "combined/txt/proteinGroups.txt" into protein_groups
+    file "combined/txt/peptides.txt" into peptides
+    file "${mqparameters}" into mq_par_final
     
     script:
     """
@@ -173,10 +175,16 @@ process run_normalyzerde {
     file exp_file_parsed from exp_design_parsed
     file exp_file_input from input_exp_design
     file protein_file from protein_groups
+    file peptide_file from peptides
 
     output:
-	file "Normalyzer/Normalyzer_stats.tsv" into normalyzer_stats
-	file "Normalyzer/${params.normalyzerMethod}-normalized.txt" into normalyzer_normalized
+	file "NormalyzerProteins/NormalyzerProteins_stats.tsv" into normalyzer_prot_stats
+	file "NormalyzerProteins/${params.normalyzerMethod}-normalized.txt" into normalyzer_prot_normalized
+        file "Normalyzer_design.tsv" into normalyzer_design
+        file "NormalyzerProteins/*.pdf" into normalyzer_prot_reports
+        file "NormalyzerPeptides/NormalyzerPeptides_stats.tsv" into normalyzer_peptide_stats
+        file "NormalyzerPeptides/${params.normalyzerMethod}-normalized.txt" into normalyzer_peptide_normalized
+        file "NormalyzerPeptides/*.pdf" into normalyzer_peptide_reports 
 
     when:
     params.run_statistics
@@ -186,8 +194,8 @@ process run_normalyzerde {
     cp "${exp_file_parsed}" exp_file.tsv
     cp "${exp_file_input}" exp_file2.tsv 
     cp "${protein_file}" protein_file.txt
+    cp "${peptide_file}" peptide_file.txt
     Rscript $baseDir/scripts/runNormalyzer.R --comps="${params.comparisons}" --method="${params.normalyzerMethod}"
-    cp -R Normalyzer "${params.outdir}"
     """
 }
 
