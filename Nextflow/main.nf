@@ -92,7 +92,8 @@ if (workflow.profile.contains('awsbatch')) {
 }
 
 // Stage config files
-ch_sdrfmapping = file("$projectDir/assets/param2sdrf.yml", checkIfExists: true)
+//ch_sdrfmapping = file("$projectDir/assets/param2sdrf.yml", checkIfExists: true)
+ch_sdrfmapping = file("https://raw.githubusercontent.com/bigbio/proteomics-metadata-standard/master/sdrf-proteomics/assets/param2sdrf.yml", checkIfExists: true)
 ch_output_docs = file("$projectDir/docs/output.md", checkIfExists: true)
 ch_output_docs_images = file("$projectDir/docs/images/", checkIfExists: true)
 
