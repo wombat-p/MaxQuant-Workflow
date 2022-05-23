@@ -1,0 +1,54 @@
+name: prepare_files
+
+description: Make sure that all files are there and make minimal ones for the ones missing
+keywords:
+  - convert
+tools:
+  - prepare_files:      
+      description: Some simple bash and python scripts
+      homepage: None
+      documentation: None
+      tool_dev_url: None
+      doi: ""
+      licence: ['Apache 2']
+input:
+   - sdrf:
+      type: file
+      description: sdrf file
+      pattern: "*.{tsv}"
+  - parameters:
+      type: file
+      description: Workflow parameters
+      pattern: "*.yml"
+  - exp_design:
+      type: file
+      description: experimental design
+      pattern: "*.{txt,tsv}"
+  - raws:
+      type: file
+      description: raw files with mass spectra
+      pattern: "*.{raw,RAW,Raw}"
+  - sdrfmapping:
+      type: file
+      description: Map between sdrf and workflow parameters
+      pattern: "*.yml"
+
+output:
+  - version:
+      type: file
+      description: File containing software version
+      pattern: "*.{version.txt}"
+  - xml:
+      type: file
+      description: Create experimental file
+      pattern: "*.{xml}"
+  - tsv:
+      type: file
+      description: Exp design
+      pattern: "*.{txt}"
+  - warning:
+      type: file
+      description: Warning from the file parser
+      pattern: "*.{txt}"
+authors:
+  - "@veitveit"

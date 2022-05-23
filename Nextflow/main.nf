@@ -19,16 +19,28 @@ def helpMessage() {
 
     Usage:
 
+    There are two ways to run this workflow:
+    a) Using an sdrf file that contains paths to the raw spectrum files
     The typical command for running the pipeline is as follows:
+    nextflow run nf-core/wombatp --sdrf "path/to/sdrffile" --fasta "path/to/sdrfile" --parameters "path/to/param_yml_file" -profile docker
 
-    nextflow run nf-core/wombatp --raws "path/to/rawfiles" --sdrf "path/to/sdrffile" --fasta "path/to/sdrfile" --parameters "path/to/param_yml_file" -profile docker
+    b) Using a file with the experimental design and corresponding raw files
+    The typical command for running the pipeline is as follows:
+    nextflow run nf-core/wombatp --raws "path/to/rawfiles" --exp_design "path/to/exp_design_file" --fasta "path/to/sdrfile" --parameters "path/to/param_yml_file" -profile docker
 
-    Mandatory arguments:
+    
+
+
+    Mandatory arguments (either "--raws" or "--sdrf" containing valid file paths:
       --raws [file]                   Path to folder with raw data files or wildcard (must be surrounded with single quotes)
-      --sdrf			      Path to sdrf file for experimental design and some of the parameters
+      --sdrf			      Path to sdrf file for experimental design and some of the parameters. Requires valid (online) paths to raw files.
       --fasta			      Path to fasta database file
-      --parameters		      Path to yaml file containing the workflow parameters  (see example)
 
+    Optional argument (recommended):
+      --parameters		      Path to yaml file containing the workflow parameters  (see example in data folder)
+      --exp_design		      Path to tsv file with experimental design (see data folder for an example). This parameter is only needed when not specifying an sdrf file
+
+    For defining environment (mandatory):  
       -profile [str]                  Configuration profile to use. Can use multiple (comma separated)
                                       Available: conda, docker, singularity, test, awsbatch, <institute> and more
 
@@ -66,6 +78,8 @@ if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
     custom_runName = workflow.runName
 }
 
+
+
 // Check AWS batch settings
 if (workflow.profile.contains('awsbatch')) {
     // AWSBatch sanity checking
@@ -83,6 +97,8 @@ ch_output_docs = file("$projectDir/docs/output.md", checkIfExists: true)
 ch_output_docs_images = file("$projectDir/docs/images/", checkIfExists: true)
 
 
+
+
 /*
 ================================================================================
                                  Create channels
@@ -92,20 +108,30 @@ ch_output_docs_images = file("$projectDir/docs/images/", checkIfExists: true)
 /*
  * Create a channel for input read files
  */
+
+
+params.parameters = "no_params"
+params.exp_design = "no_exp_design"
+params.sdrf = "no_sdrf"
+params.raws = "no_raws"
+params.fasta = "no_fasta"
+
 input_raws = Channel
      .fromPath(params.raws)
-     .ifEmpty { exit 1, "no raws parameter or folder was empty - no input raw files supplied" }
 
-input_fasta = Channel
-     .fromPath(params.fasta, checkIfExists: true)
-     .ifEmpty { exit 1, "no fasta database specified or file not existing "}
+if (params.raws == "no_raws" & !file(params.sdrf).exists()) {
+	exit 1, "ERROR: neither raw files found nor sdrf file given. This could also be due to an empty folder - no input raw files supplied" } 
+
+
+if(!file(params.fasta).exists()) {
+	exit 1, "ERROR: no fasta database specified or file not existing "}
+input_fasta = Channel.from(file(params.fasta, checkIfExists: true))
 
 input_sdrf = Channel
-     .fromPath(params.sdrf, checkIfExists: true)
-     .ifEmpty { exit 1, "no sdrf file specified or file not existing" }
+     .fromPath(params.sdrf)
 
-input_parameters = Channel.fromPath(params.parameters, checkIfExists: true).ifEmpty { exit 1, "no parameter file specified or file not existing" }
- 
+input_parameters = Channel.fromPath(params.parameters)
+input_exp_design = Channel.fromPath(params.exp_design)
 
 // Header log info
 log.info nfcoreHeader()
@@ -114,9 +140,10 @@ if (workflow.revision) summary['Pipeline Release'] = workflow.revision
 summary['Run Name']         = custom_runName ?: workflow.runName
 // TODO nf-core: Report custom parameters here
 summary['Raw files']            = params.raws
-summary['Fasta database']        = params.fasta
-summary['SDRF file']		 = params.sdrf
-summary['Parameter file']		 = params.parameters
+summary['Fasta database']       = params.fasta
+summary['SDRF file']		= params.sdrf
+summary['Parameter file']	= params.parameters
+summary['Experimental design file']	= params.exp_design
 summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
 if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
 summary['Output dir']       = params.outdir
@@ -169,27 +196,29 @@ Channel.from(summary.collect{ [it.key, it.value] })
 
 
 params.collected_options = [:]
-include { GET_SOFTWARE_VERSIONS }         from './modules/local/getsoftwareversions/main'   addParams(options: [publish_files : ['csv':'']])
-include { SDRFPIPELINES }                 from './modules/local/sdrfpipelines/main'         addParams(options: params.collected_options)
-include { SDRFMERGE }                 from './modules/local/sdrfmerge/main'         addParams(options: params.collected_options)
-//include { MAXQUANTPREP }                      from './modules/local/maxquantprep/main'              addParams(options: params.collected_options)
-include { MAXQUANT }                      from './modules/local/maxquant/main'              addParams(options: params.collected_options)
-//include { NORMALIZERDE }                  from './modules/software/normalizerde/main'          addParams(options: params.collected_options)
+//include { GET_SOFTWARE_VERSIONS }         from './modules/local/getsoftwareversions/main'   addParams(options: [publish_files : ['csv':'']])
+include { PREPARE_FILES }                 from './modules/local/prepare_files/main'   addParams(options: params.collected_options)
+include { CONVERT_MAXQUANT }                 from './modules/local/sdrfpipelines/convert_maxquant/main'   addParams(options: params.collected_options)
+include { SDRFMERGE }                 from './modules/local/sdrfpipelines/sdrfmerge/main'         addParams(options: params.collected_options)
+include { MAXQUANT_LFQ }                      from './modules/nf-core/modules/maxquant/lfq/main'              addParams(options: [:] )
+include { NORMALYZERDE }                  from './modules/local/normalyzerde/main'          addParams(options: params.collected_options)
 
 
 workflow maxquantpipeline {
     ch_software_versions = Channel.empty()
 
-    SDRFMERGE (input_sdrf, input_parameters, ch_sdrfmapping)
-    SDRFPIPELINES (SDRFMERGE.out.sdrf_local, input_fasta)
-//    ch_software_versions = ch_software_versions.mix(SDRFPIPELINES.out.version.first().ifEmpty(null))
-//    MAXQUANT (SDRFPIPELINES.out.sdr_local, input_raw.collect(), input_fasta)
-//    ch_software_versions = ch_software_versions.mix(MAXQUANT.out.version.first().ifEmpty(null))
-//    NORMALIZERDE (input_sdrf, SDRFPIPELINES.out[1], MAXQUANT.out[0], input_exp_design)
+    PREPARE_FILES (input_sdrf, input_parameters, input_exp_design, input_raws.collect(), ch_sdrfmapping)
+    SDRFMERGE (PREPARE_FILES.out.sdrf_local, PREPARE_FILES.out.params, ch_sdrfmapping)
+    CONVERT_MAXQUANT (SDRFMERGE.out.sdrf_local, input_fasta)
+ //   input = [ [ id:'run' ], // meta map
+ //              input_fasta, CONVERT_MAXQUANT.out.maxquantpar ]
+    MAXQUANT_LFQ ( input_fasta , CONVERT_MAXQUANT.out.maxquantpar, PREPARE_FILES.out.raws.collect() )
+//    MAXQUANT_LFQ (input, input_raws.collect())
+    NORMALYZERDE (MAXQUANT_LFQ.out.maxquant_txt, PREPARE_FILES.out.exp_design, CONVERT_MAXQUANT.out.exp_design)
  //   ch_software_versions = ch_software_versions.mix(NORMALIZERDE.out.version.first().ifEmpty(null))
-    GET_SOFTWARE_VERSIONS (
-        ch_software_versions.map { it }.collect()
-    )
+//    GET_SOFTWARE_VERSIONS (
+//        ch_software_versions.map { it }.collect()
+//    )
 }
 
 

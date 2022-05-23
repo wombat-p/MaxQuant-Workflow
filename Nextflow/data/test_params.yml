@@ -1,7 +1,7 @@
 params: 
   fixed_mods: Carbamidomethyl of C
-  variable_mods: Oxidation of M,Acetyl of Protein N-term
-  precursor_mass_tolerance: 30 ppm
+  variable_mods: Oxidation of M
+  precursor_mass_tolerance: 10 ppm
   fragment_mass_tolerance: 0.05 Da
   enzyme: Trypsin
   fions: a,b

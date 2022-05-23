@@ -1,5 +1,11 @@
 {
     "name": "nf-core/wombatp",
     "homePage": "https://github.com/nf-core/wombatp",
-    "repos": {}
+    "repos": {
+        "nf-core/modules": {
+            "maxquant/lfq": {
+                "git_sha": "12815af53eb5219055b6e7747efb66cb57bfe542"
+            }
+        }
+    }
 }

@@ -4,44 +4,26 @@ description: The SDRF pipelines provide a set of tools to validate and convert S
 keywords:
   - convert
 tools:
-  - sdrfpipelines:
-      
+  - sdrfpipelines:      
       description: Translate, convert SDRF to configuration pipelines
       homepage: https://github.com/bigbio/sdrf-pipelines
       documentation: https://github.com/bigbio/sdrf-pipelines
       tool_dev_url: https://github.com/bigbio/sdrf-pipelines
       doi: ""
       licence: ['Apache 2']
-params: 
-  - outdir:
-      type: string
-      description: |
-          The pipeline's output directory. By default, the module will
-          output files into `$params.outdir/<SOFTWARE>`
-  - publish_dir_mode:
-      type: string
-      description: |
-          Value for the Nextflow `publishDir` mode parameter.
-          Available: symlink, rellink, link, copy, copyNoFollow, move.
-  - enable_conda:
-      type: boolean
-      description: |
-          Run the module with Conda using the software specified
-          via the `conda` directive
-  - singularity_pull_docker_container:
-      type: boolean
-      description: |
-          Instead of directly downloading Singularity images for use with Singularity,
-          force the workflow to pull and convert Docker containers instead.
 input:
    - sdrf:
       type: file
       description: sdrf file
       pattern: "*.{tsv}"
-  - fasta:
+  - parameters:
       type: file
-      description: Fasta file of reference genome
-      pattern: "*.fasta"
+      description: Workflow parameters
+      pattern: "*.yml"
+  - sdrfmapping:
+      type: file
+      description: Map between sdrf and workflow parameters
+      pattern: "*.yml"
 
 output:
   - version:
@@ -55,7 +37,7 @@ output:
   - tsv:
       type: file
       description: Exp design
-      pattern: "*.{tsv}"
+      pattern: "*.{txt}"
   - warning:
       type: file
       description: Warning from the file parser
