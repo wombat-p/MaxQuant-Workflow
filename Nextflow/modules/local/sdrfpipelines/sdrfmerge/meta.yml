@@ -1,0 +1,46 @@
+name: sdrfpipelines
+
+description: The SDRF pipelines provide a set of tools to validate and convert SDRF files to different workflow configuration files such as MSstats,OpenMS and MaxQuant.
+keywords:
+  - convert
+tools:
+  - sdrfpipelines:      
+      description: Translate, convert SDRF to configuration pipelines
+      homepage: https://github.com/bigbio/sdrf-pipelines
+      documentation: https://github.com/bigbio/sdrf-pipelines
+      tool_dev_url: https://github.com/bigbio/sdrf-pipelines
+      doi: ""
+      licence: ['Apache 2']
+input:
+   - sdrf:
+      type: file
+      description: sdrf file
+      pattern: "*.{tsv}"
+  - parameters:
+      type: file
+      description: Workflow parameters
+      pattern: "*.yml"
+  - sdrfmapping:
+      type: file
+      description: Map between sdrf and workflow parameters
+      pattern: "*.yml"
+
+output:
+  - version:
+      type: file
+      description: File containing software version
+      pattern: "*.{version.txt}"
+  - xml:
+      type: file
+      description: Create experimental file
+      pattern: "*.{xml}"
+  - tsv:
+      type: file
+      description: Exp design
+      pattern: "*.{txt}"
+  - warning:
+      type: file
+      description: Warning from the file parser
+      pattern: "*.{txt}"
+authors:
+  - "@veitveit"
