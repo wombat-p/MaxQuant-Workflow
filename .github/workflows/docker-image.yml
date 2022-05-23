@@ -32,9 +32,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Build the Docker image (dev)
-      working-directory: Nextflow/docker
-      run: docker build . --file Dockerfile --tag wombatp/${WORKFLOW}:dev
+#    - name: Build the Docker image (dev)
+#      working-directory: Nextflow/docker
+#      run: docker build . --file Dockerfile --tag wombatp/${WORKFLOW}:dev
 
     - name: Install Nextflow
       run: |
@@ -47,46 +47,46 @@ jobs:
       run: |
           nextflow run main.nf -profile test,docker
 
-    - name: Push Docker image to DockerHub (dev)
-      if: ${{ github.event_name == 'push' }}
-      run: |
-          echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-          docker push wombatp/${WORKFLOW}:dev
+#    - name: Push Docker image to DockerHub (dev)
+#      if: ${{ github.event_name == 'push' }}
+#      run: |
+#          echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+#          docker push wombatp/${WORKFLOW}:dev
 
-    - name: Build Docker image (release)
-      working-directory: Nextflow/docker
-      if: ${{ github.event_name == 'release' }}
-      run: |
-          version=${{ github.ref }}
-          version=(${version//\// })
-          version=${version[2]}
-          docker build . --file Dockerfile --tag wombatp/${WORKFLOW}:${version}
+ #   - name: Build Docker image (release)
+ #     working-directory: Nextflow/docker
+ #     if: ${{ github.event_name == 'release' }}
+ #     run: |
+ #         version=${{ github.ref }}
+ #         version=(${version//\// })
+ #         version=${version[2]}
+ #         docker build . --file Dockerfile --tag wombatp/${WORKFLOW}:${version}
 
-  push_dockerhub:
-    name: Push new Docker image to Docker Hub
-    runs-on: ubuntu-latest
+ # push_dockerhub:
+ #   name: Push new Docker image to Docker Hub
+ #   runs-on: ubuntu-latest
     # Only run if the tests passed
-    needs: build
+ #   needs: build
     # Only run for the releases
-    if: ${{ github.event_name == 'release' }}
-    env:
-      WORKFLOW: maxquant-pipeline
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
-    steps:
+ #   if: ${{ github.event_name == 'release' }}
+ #   env:
+ #     WORKFLOW: maxquant-pipeline
+ #     DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+ #     DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+ #   steps:
      - name: Check out pipeline code
        uses: actions/checkout@v2
 
-     - name: Build new docker image
-       working-directory: Nextflow/docker
-       run: docker build --no-cache . -t wombatp/${WORKFLOW}:latest
+ #    - name: Build new docker image
+ #      working-directory: Nextflow/docker
+ #      run: docker build --no-cache . -t wombatp/${WORKFLOW}:latest
 
-     - name: Push Docker image to DockerHub (release)
-       if: ${{ github.event_name == 'release' }}
-       run: |
-          echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-          version=${{ github.ref }}
-          version=(${version//\// })
-          version=${version[2]}
-          docker tag wombatp/${WORKFLOW}:latest wombatp/${WORKFLOW}:${version}
-          docker push wombatp/${WORKFLOW}:${version}
+ #    - name: Push Docker image to DockerHub (release)
+ #      if: ${{ github.event_name == 'release' }}
+ #      run: |
+ #         echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+ #         version=${{ github.ref }}
+ #         version=(${version//\// })
+ #         version=${version[2]}
+ #         docker tag wombatp/${WORKFLOW}:latest wombatp/${WORKFLOW}:${version}
+ #         docker push wombatp/${WORKFLOW}:${version}
