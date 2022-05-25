@@ -8,6 +8,7 @@
  https://github.com/nf-core/wombatp
 ----------------------------------------------------------------------------------------
 */
+import groovy.json.JsonOutput
 
 nextflow.enable.dsl = 2
 
@@ -39,6 +40,8 @@ def helpMessage() {
     Optional argument (recommended):
       --parameters		      Path to yaml file containing the workflow parameters  (see example in data folder)
       --exp_design		      Path to tsv file with experimental design (see data folder for an example). This parameter is only needed when not specifying an sdrf file
+      --comparisons   		      Comparisons for statistical tests. Needs to be in the format "Cond2-Cond1,Cond3-Cond1" assuming that CondN are the conditions in the experimental design file. 
+      --run_statistics 		      "False" for not running statistical testing (default: "True")
 
     For defining environment (mandatory):  
       -profile [str]                  Configuration profile to use. Can use multiple (comma separated)
@@ -116,6 +119,8 @@ params.exp_design = "no_exp_design"
 params.sdrf = "no_sdrf"
 params.raws = "no_raws"
 params.fasta = "no_fasta"
+params.run_statistics = "True"
+params.comps = ""
 
 input_raws = Channel
      .fromPath(params.raws)
@@ -203,19 +208,22 @@ include { CONVERT_MAXQUANT }                 from './modules/local/sdrfpipelines
 include { SDRFMERGE }                 from './modules/local/sdrfpipelines/sdrfmerge/main'         addParams(options: params.collected_options)
 include { MAXQUANT_LFQ }                      from './modules/nf-core/modules/maxquant/lfq/main'              addParams(options: [:] )
 include { NORMALYZERDE }                  from './modules/local/normalyzerde/main'          addParams(options: params.collected_options)
+include { CALCBENCHMARKS }                  from './modules/local/calcbenchmarks/main'          addParams(options: params.collected_options)
 
 
 workflow maxquantpipeline {
     ch_software_versions = Channel.empty()
-
     PREPARE_FILES (input_sdrf, input_parameters, input_exp_design, input_raws.collect(), ch_sdrfmapping)
     SDRFMERGE (PREPARE_FILES.out.sdrf_local, PREPARE_FILES.out.params, ch_sdrfmapping)
+//    SDRFMERGE.out.sdrf_local.splitCsv(sep: "\t", header: true).map{ row -> row["comment[normalization method]"]}.unique().view()
     CONVERT_MAXQUANT (SDRFMERGE.out.sdrf_local, input_fasta)
  //   input = [ [ id:'run' ], // meta map
  //              input_fasta, CONVERT_MAXQUANT.out.maxquantpar ]
     MAXQUANT_LFQ ( input_fasta , CONVERT_MAXQUANT.out.maxquantpar, PREPARE_FILES.out.raws.collect() )
 //    MAXQUANT_LFQ (input, input_raws.collect())
-    NORMALYZERDE (MAXQUANT_LFQ.out.maxquant_txt, PREPARE_FILES.out.exp_design, CONVERT_MAXQUANT.out.exp_design)
+    NORMALYZERDE (MAXQUANT_LFQ.out.maxquant_txt, PREPARE_FILES.out.exp_design, CONVERT_MAXQUANT.out.exp_design, 
+    		  SDRFMERGE.out.sdrf_local.splitCsv(sep: "\t", header: true).map{row -> row["comment[normalization method]"]}.unique())
+    CALCBENCHMARKS (JsonOutput.prettyPrint(JsonOutput.toJson(params)), PREPARE_FILES.out.exp_design, NORMALYZERDE.out.std_prots, NORMALYZERDE.out.std_peps, input_fasta )		  
  //   ch_software_versions = ch_software_versions.mix(NORMALIZERDE.out.version.first().ifEmpty(null))
 //    GET_SOFTWARE_VERSIONS (
 //        ch_software_versions.map { it }.collect()
@@ -285,20 +293,6 @@ workflow.onComplete {
     email_fields['summary']['Nextflow Build'] = workflow.nextflow.build
     email_fields['summary']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
 
-    // TODO nf-core: If not using MultiQC, strip out this code (including params.max_multiqc_email_size)
-    // On success try attach the multiqc report
-    def mqc_report = null
-    try {
-        if (workflow.success) {
-            mqc_report = ch_multiqc_report.getVal()
-            if (mqc_report.getClass() == ArrayList) {
-                log.warn "[nf-core/wombatp] Found multiple reports from process 'multiqc', will use only one"
-                mqc_report = mqc_report[0]
-            }
-        }
-    } catch (all) {
-        log.warn "[nf-core/wombatp] Could not attach MultiQC report to summary email"
-    }
 
     // Check if we are only sending emails on failure
     email_address = params.email
@@ -318,7 +312,7 @@ workflow.onComplete {
     def email_html = html_template.toString()
 
     // Render the sendmail template
-    def smail_fields = [ email: email_address, subject: subject, email_txt: email_txt, email_html: email_html, projectDir: "$projectDir", mqcFile: mqc_report, mqcMaxSize: params.max_multiqc_email_size.toBytes() ]
+    def smail_fields = [ email: email_address, subject: subject, email_txt: email_txt, email_html: email_html, projectDir: "$projectDir"]
     def sf = new File("$projectDir/assets/sendmail_template.txt")
     def sendmail_template = engine.createTemplate(sf).make(smail_fields)
     def sendmail_html = sendmail_template.toString()
@@ -333,9 +327,6 @@ workflow.onComplete {
         } catch (all) {
             // Catch failures and try with plaintext
             def mail_cmd = [ 'mail', '-s', subject, '--content-type=text/html', email_address ]
-            if ( mqc_report.size() <= params.max_multiqc_email_size.toBytes() ) {
-              mail_cmd += [ '-A', mqc_report ]
-            }
             mail_cmd.execute() << email_html
             log.info "[nf-core/wombatp] Sent summary e-mail to $email_address (mail)"
         }

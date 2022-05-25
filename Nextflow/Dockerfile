@@ -1,4 +1,4 @@
-FROM nfcore/base:1.12.1
+FROM nfcore/base
 LABEL authors="Veit Schwämmle" \
       description="Docker image containing all software requirements for the nf-core/wombatp pipeline"
 

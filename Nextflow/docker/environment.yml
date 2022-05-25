@@ -6,9 +6,14 @@ channels:
 dependencies:
   - r-hexbin
   - pyyaml=5.4.1
+  - r-stringi=1.7.6
+  - r-matrixstats=0.62.0
+  - r-stringr=1.4.0
+  - r-jsonlite=1.8.0
 #  - mono=6.12.0.90
   - dotnet
   - maxquant=2.0.1.0
   - sdrf-pipelines=0.0.19
-  - bioconductor-normalyzerde=1.14.0
+# Needs to be upgraded to 1.14
+  - bioconductor-normalyzerde=1.13.0
  # - libopenblas=0.3.3   # freezing this to older version, as newer version causes problem in "normalize.quantile"

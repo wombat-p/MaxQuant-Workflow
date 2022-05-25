@@ -8,11 +8,9 @@ if (length(comps) > 1) {
    comps <- ""
 }
 
-
 # merging experimental design file from sdrf parser with actual design
 A<-read.csv("exp_file.tsv",sep="\t")
 B<- read.csv("exp_file2.tsv", sep="\t")
-print(B)
 
 B[,1] <- tools::file_path_sans_ext(basename(B[,1]))
 A$raw_file <- tools::file_path_sans_ext(basename(A$raw_file))
@@ -32,7 +30,20 @@ if (comps == "") {
   comps <- unlist(strsplit(comps,","))
 }
 
-# run Normalyzer
+## changing peptides to modification string of "sequence_[ptm]_mod.id in peptide input for Normalyzer
+# Create some modification string
+peps <- read.csv("peptide_file.txt", sep="\t")
+cmods <- grep("site\\.IDs$", colnames(peps), value=T)
+mods <- unlist(sub("\\.site\\.IDs", "", cmods))
+mods <- unlist(gsub("\\.", "", mods))
+names(mods) <- cmods
+for (c in cmods) {
+  peps[,c] <- sapply(peps[,c], function(x) ifelse(is.na(x), "", paste0("_[",mods[c],"]_",unlist(strsplit(as.character(x),";")), collapse="")))
+}
+peps$Sequence <- paste0(peps$Sequence, peps[,cmods])
+write.table(peps, "peptide_file.txt", row.names=F, sep="\t", quote=F)
+
+## run Normalyzer
 if (min(table(final_exp[,"group"])) > 1) {
    NormalyzerDE::normalyzer(jobName="NormalyzerProteins", designPath="Normalyzer_design.tsv", dataPath="protein_file.txt", zeroToNA = TRUE, inputFormat = "maxquantprot", outputDir="./",sampleColName="Experiment",requireReplicates=F)
    NormalyzerDE::normalyzer(jobName="NormalyzerPeptides", designPath="Normalyzer_design.tsv", dataPath="peptide_file.txt", zeroToNA = TRUE, inputFormat = "maxquantpep", outputDir="./",sampleColName="Experiment",requireReplicates=F)
@@ -46,3 +57,40 @@ if (min(table(final_exp[,"group"])) > 1) {
   write.csv(NA,"NormalyzerProteins/Normalyzer_stats.tsv")
   write.csv(NA,"NormalyzerPeptides/Normalyzer_stats.tsv")
 }
+
+## Preparing for standardized format
+# Reading files
+peptides <- read.csv("peptide_file.txt", sep="\t", row.names=1)
+proteins <- read.csv("protein_file.txt", sep="\t", row.names=1)
+norm_peptides <- read.csv(paste0("NormalyzerPeptides/", normalyzerMethod, "-normalized.txt"), sep="\t", row.names = 1)
+norm_proteins <- read.csv(paste0("NormalyzerProteins/", normalyzerMethod, "-normalized.txt"), sep="\t", row.names = 1)
+
+# changing column names
+peptides$missed_cleavages <- peptides$Missed.cleavages
+peptides$charge <- peptides$Charges
+peptides$protein_group <- peptides$Proteins
+
+colnames(peptides) <- unlist(sub("^Experiment\\.", "number_of_psms_", colnames(peptides)))
+
+# colnames(peptides) <- unlist(sub("^LFQ\\.intensity\\.","abundance_", colnames(peptides)))
+# for (i in 1:nrow(final_exp)) {
+#   colnames(peptides) <- unlist(sub(final_exp[i,1], final_exp[i,2], colnames(peptides)))
+#   colnames(proteins) <- unlist(sub(final_exp[i,1], final_exp[i,2], colnames(proteins)))
+# }
+colnames(proteins) <- unlist(sub("^Razor\\.\\.\\.unique\\.peptides\\.", "number_of_peptides_", colnames(proteins)))
+proteins$protein_group <- rownames(proteins)
+for (s in final_exp$Experiment) {
+  colnames(norm_proteins) <- sub(s, paste0("abundance_",s), colnames(norm_proteins))
+  colnames(norm_peptides) <- sub(s, paste0("abundance_",s), colnames(norm_peptides))
+}
+
+# getting relevant columns
+proteins <- cbind(proteins[rownames(norm_proteins), c("protein_group", grep("^number_of_peptides_", colnames(proteins), value=T))],
+                  norm_proteins[,grep("^abundance_", colnames(norm_proteins), value=T)])
+peptides <- cbind(modified_sequence=rownames(norm_peptides), peptides[rownames(norm_peptides), c("protein_group", grep("^number_of_psms_", colnames(peptides), value=T))],
+                  norm_peptides[,grep("^abundance_", colnames(norm_peptides), value=T)])
+
+write.csv(proteins, "stand_prot_quant_merged.csv", row.names = F)
+write.csv(peptides, "stand_pep_quant_merged.csv", row.names = F)
+
+cat("Done\n")

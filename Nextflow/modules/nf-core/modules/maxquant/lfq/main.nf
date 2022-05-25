@@ -2,7 +2,7 @@ process MAXQUANT_LFQ {
 //    tag "$meta.id"
     publishDir "${params.outdir}/maxquant"
     
-    label 'process_long'
+    label 'process_high'
     conda (params.enable_conda ? "bioconda::maxquant=2.0.3.0=py310hdfd78af_1" : null)
     if (workflow.containerEngine == 'singularity' && !params.singularity_pull_docker_container) {
         container "https://depot.galaxyproject.org/singularity/maxquant:2.0.3.0--py310hdfd78af_1"

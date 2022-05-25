@@ -13,11 +13,14 @@ input:
     path maxquant
     path exp_file
     path exp_file2
+    val normalization
   
     output:
 	path "Normalyzer_design.tsv" , emit: normalyzer_design
 	path "NormalyzerProteins/*"   , emit:  normalyzer_proteins
 	path "NormalyzerPeptides/*"   , emit:  normalyzer_peptides
+        path "stand_prot_quant_merged.csv"    , emit: std_prots
+        path "stand_pep_quant_merged.csv"    , emit: std_peps
 
     when:
     params.run_statistics
@@ -28,7 +31,7 @@ input:
     cp "${exp_file2}" exp_file2.tsv 
     cp "proteinGroups.txt" protein_file.txt
     cp "peptides.txt" peptide_file.txt
-    Rscript $baseDir/scripts/runNormalyzer.R --comps="${params.comparisons}" --method="${params.normalization}"
+    Rscript $baseDir/scripts/runNormalyzer.R --comps="${params.comparisons}" --method="${normalization}"
     """
 
 }
