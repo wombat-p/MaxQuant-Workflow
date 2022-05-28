@@ -1,11 +1,12 @@
 process CONVERT_MAXQUANT {
     publishDir "${params.outdir}/sdrfmerge"
     label 'process_medium'
-    conda (params.enable_conda ? "bioconda::sdrf-pipelines=0.0.14--py_0" : null)
+    conda (params.enable_conda ? "bioconda::sdrf-pipelines=0.0.21--py_0" : null)
     if (workflow.containerEngine == 'singularity' && !params.singularity_pull_docker_container) {
-        container "https://depot.galaxyproject.org/singularity/sdrf-pipelines:0.0.14"
+        container "https://depot.galaxyproject.org/singularity/sdrf-pipelines:0.0.21"
     } else {
-        container "quay.io/biocontainers/sdrf-pipelines:0.0.14--py_0"
+//        container "quay.io/biocontainers/sdrf-pipelines:0.0.21--py_0"
+        container "wombatp/maxquant-pipeline:dev"
     }
 
     input:
@@ -30,5 +31,9 @@ process CONVERT_MAXQUANT {
     -n ${task.cpus} 
     echo "Preliminary" > sdrf_merge.version.txt
 
+    parse_sdrf \\
+    convert-normalyzerde \\
+    -s "${sdrf}" \\
+    -o exp_design.tsv
     """
 }

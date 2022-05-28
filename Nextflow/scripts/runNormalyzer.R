@@ -9,16 +9,13 @@ if (length(comps) > 1) {
 }
 
 # merging experimental design file from sdrf parser with actual design
-A<-read.csv("exp_file.tsv",sep="\t")
-B<- read.csv("exp_file2.tsv", sep="\t")
-
-B[,1] <- tools::file_path_sans_ext(basename(B[,1]))
-A$raw_file <- tools::file_path_sans_ext(basename(A$raw_file))
-names(A) <- c("file", "group")
-B$Experiment <- make.names(B$Experiment)
-C<-merge(A,B,by.x="file",by.y="Name")
-final_exp <- unique(C[,c("Experiment","group")])
-num_cond <- nrow(final_exp)
+final_exp<-read.csv("Normalyzer_design.tsv",sep="\t")
+# B<- read.csv("exp_file2.tsv", sep="\t")
+# 
+final_exp$Experiment <- paste0(make.names(final_exp$source_name), "_Tr_", final_exp$technical_replicate)
+# C<-merge(A,B,by.x="file",by.y="Name")
+# final_exp <- unique(C[,c("Experiment","group")])
+# num_cond <- nrow(final_exp)
 write.table(final_exp, "Normalyzer_design.tsv",sep="\t", row.names=F,quote=F)
 
 # comparison set to everything versus first
@@ -44,7 +41,7 @@ peps$Sequence <- paste0(peps$Sequence, peps[,cmods])
 write.table(peps, "peptide_file.txt", row.names=F, sep="\t", quote=F)
 
 ## run Normalyzer
-if (min(table(final_exp[,"group"])) > 1) {
+if (min(table(final_exp[,"group"])) > 1 & length(unique(final_exp[,"group"])) > 1) {
    NormalyzerDE::normalyzer(jobName="NormalyzerProteins", designPath="Normalyzer_design.tsv", dataPath="protein_file.txt", zeroToNA = TRUE, inputFormat = "maxquantprot", outputDir="./",sampleColName="Experiment",requireReplicates=F)
    NormalyzerDE::normalyzer(jobName="NormalyzerPeptides", designPath="Normalyzer_design.tsv", dataPath="peptide_file.txt", zeroToNA = TRUE, inputFormat = "maxquantpep", outputDir="./",sampleColName="Experiment",requireReplicates=F)
    print("Now running differential expression analysis")
@@ -53,7 +50,7 @@ if (min(table(final_exp[,"group"])) > 1) {
 } else {
   NormalyzerDE::normalyzer(jobName="NormalyzerProteins", designPath="Normalyzer_design.tsv", dataPath="protein_file.txt", zeroToNA = TRUE, inputFormat = "maxquantprot", outputDir="./",sampleColName="Experiment",requireReplicates=F,skipAnalysis=T)
   NormalyzerDE::normalyzer(jobName="NormalyzerPeptides", designPath="Normalyzer_design.tsv", dataPath="peptide_file.txt", zeroToNA = TRUE, inputFormat = "maxquantpep", outputDir="./",sampleColName="Experiment",requireReplicates=F,skipAnalysis=T)
-  print("No statistical testing as at least one sample group with only 1 replicate")
+  print("No statistical testing as at least one sample group with only 1 replicate or only one sample group")
   write.csv(NA,"NormalyzerProteins/Normalyzer_stats.tsv")
   write.csv(NA,"NormalyzerPeptides/Normalyzer_stats.tsv")
 }
@@ -69,6 +66,14 @@ norm_proteins <- read.csv(paste0("NormalyzerProteins/", normalyzerMethod, "-norm
 peptides$missed_cleavages <- peptides$Missed.cleavages
 peptides$charge <- peptides$Charges
 peptides$protein_group <- peptides$Proteins
+pval_cols <- colnames(peptides)[grep("AdjPVal$", colnames(peptides))]
+colnames(peptides)[grep("AdjPVal$", colnames(peptides))] <- paste0("differential_regulation_", sub("_AdjPVal","", pval_cols))
+pval_cols <- colnames(proteins)[grep("AdjPVal$", colnames(proteins))]
+colnames(proteins)[grep("AdjPVal$", colnames(proteins))] <- paste0("differential_regulation_", sub("_AdjPVal","", pval_cols))
+pval_cols <- colnames(peptides)[grep("PValue$", colnames(peptides))]
+colnames(peptides)[grep("AdjPVal$", colnames(peptides))] <- paste0("differential_regulation_", sub("_PValue","", pval_cols))
+pval_cols <- colnames(proteins)[grep("PValue$", colnames(proteins))]
+colnames(proteins)[grep("PValue$", colnames(proteins))] <- paste0("differential_regulation_", sub("_PValue","", pval_cols))
 
 colnames(peptides) <- unlist(sub("^Experiment\\.", "number_of_psms_", colnames(peptides)))
 
@@ -77,20 +82,34 @@ colnames(peptides) <- unlist(sub("^Experiment\\.", "number_of_psms_", colnames(p
 #   colnames(peptides) <- unlist(sub(final_exp[i,1], final_exp[i,2], colnames(peptides)))
 #   colnames(proteins) <- unlist(sub(final_exp[i,1], final_exp[i,2], colnames(proteins)))
 # }
+
+# changing generic names to experimental design
 colnames(proteins) <- unlist(sub("^Razor\\.\\.\\.unique\\.peptides\\.", "number_of_peptides_", colnames(proteins)))
 proteins$protein_group <- rownames(proteins)
-for (s in final_exp$Experiment) {
-  colnames(norm_proteins) <- sub(s, paste0("abundance_",s), colnames(norm_proteins))
-  colnames(norm_peptides) <- sub(s, paste0("abundance_",s), colnames(norm_peptides))
+for (s in 1:nrow(final_exp))  {
+  substitute_from <- paste0(make.names(final_exp$source_name[s]),"_Tr_",final_exp$technical_replicate[s])
+  substitute_with <- paste0(make.names(final_exp$group[s]),"_",final_exp$technical_replicate[s])
+  # avoid setting X in front 
+  if (grepl("^X", substitute_with)) substitute_with <- sub("^X","",substitute_with)
+  colnames(proteins) <- sub(substitute_from, substitute_with, colnames(proteins))
+  colnames(peptides) <- sub(substitute_from, substitute_with, colnames(peptides))
+  colnames(norm_proteins) <- sub(paste0("^",substitute_from), paste0("abundance_", substitute_with), colnames(norm_proteins))
+  colnames(norm_peptides) <- sub(paste0("^",substitute_from), paste0("abundance_", substitute_with), colnames(norm_peptides))
 }
 
 # getting relevant columns
+norm_peptides[,grep("^abundance_", colnames(norm_peptides), value=T)] <- 2^(norm_peptides[,grep("^abundance_", colnames(norm_peptides), value=T)])
 proteins <- cbind(proteins[rownames(norm_proteins), c("protein_group", grep("^number_of_peptides_", colnames(proteins), value=T))],
                   norm_proteins[,grep("^abundance_", colnames(norm_proteins), value=T)])
-peptides <- cbind(modified_sequence=rownames(norm_peptides), peptides[rownames(norm_peptides), c("protein_group", grep("^number_of_psms_", colnames(peptides), value=T))],
+peptides <- cbind(modified_peptide=rownames(norm_peptides), peptides[rownames(norm_peptides), c("protein_group", grep("^number_of_psms_", colnames(peptides), value=T))],
                   norm_peptides[,grep("^abundance_", colnames(norm_peptides), value=T)])
+
+
 
 write.csv(proteins, "stand_prot_quant_merged.csv", row.names = F)
 write.csv(peptides, "stand_pep_quant_merged.csv", row.names = F)
+exp_design_out <- final_exp[, c("Run","group" )]
+colnames(exp_design_out) <- c("raw_file","exp_condition")
+write.table(exp_design_out, "exp_design_calcb.tsv", quote=F, sep="\t", row.names=F)
 
 cat("Done\n")

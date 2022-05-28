@@ -121,6 +121,7 @@ Quantification=list()
 tPep <- tProt <- tPep2 <- tProt2 <-tprotquant <- tpepquant <-  NULL
 for (i in unique(ExpDesign$exp_condition)) {
   tquant <- as.matrix(StatsPep[,grep(paste0("^abundance_", i), colnames(StatsPep)), drop=F])
+print(ExpDesign)
   tPep <- c(tPep, rowSds(tquant, na.rm=T) / rowMeans(tquant, na.rm=T))
   tPep2 <- c(tPep2, cor(log2(tquant), use="pairwise.complete.obs"))
   tquant <- 2^as.matrix(StatsProt[,grep(paste0("^abundance_", i), colnames(StatsProt)), drop=F])

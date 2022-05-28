@@ -148,9 +148,9 @@ parameters:
   sdrf: quantification method
   default: intensity
   value:
+    - precursor
     - ms2
     - labelled
-    - intensity
     - other
 
 - name: summarization_proteins

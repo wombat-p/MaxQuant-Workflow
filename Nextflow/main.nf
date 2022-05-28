@@ -7,10 +7,12 @@
  #### Homepage / Documentation
  https://github.com/nf-core/wombatp
 ----------------------------------------------------------------------------------------
+
+nextflow.enable.dsl = 2
+
 */
 import groovy.json.JsonOutput
 
-nextflow.enable.dsl = 2
 
 
 def helpMessage() {
@@ -215,15 +217,11 @@ workflow maxquantpipeline {
     ch_software_versions = Channel.empty()
     PREPARE_FILES (input_sdrf, input_parameters, input_exp_design, input_raws.collect(), ch_sdrfmapping)
     SDRFMERGE (PREPARE_FILES.out.sdrf_local, PREPARE_FILES.out.params, ch_sdrfmapping)
-//    SDRFMERGE.out.sdrf_local.splitCsv(sep: "\t", header: true).map{ row -> row["comment[normalization method]"]}.unique().view()
     CONVERT_MAXQUANT (SDRFMERGE.out.sdrf_local, input_fasta)
- //   input = [ [ id:'run' ], // meta map
- //              input_fasta, CONVERT_MAXQUANT.out.maxquantpar ]
     MAXQUANT_LFQ ( input_fasta , CONVERT_MAXQUANT.out.maxquantpar, PREPARE_FILES.out.raws.collect() )
-//    MAXQUANT_LFQ (input, input_raws.collect())
-    NORMALYZERDE (MAXQUANT_LFQ.out.maxquant_txt, PREPARE_FILES.out.exp_design, CONVERT_MAXQUANT.out.exp_design, 
+    NORMALYZERDE (MAXQUANT_LFQ.out.maxquant_txt, CONVERT_MAXQUANT.out.exp_design, 
     		  SDRFMERGE.out.sdrf_local.splitCsv(sep: "\t", header: true).map{row -> row["comment[normalization method]"]}.unique())
-    CALCBENCHMARKS (JsonOutput.prettyPrint(JsonOutput.toJson(params)), PREPARE_FILES.out.exp_design, NORMALYZERDE.out.std_prots, NORMALYZERDE.out.std_peps, input_fasta )		  
+    CALCBENCHMARKS (JsonOutput.prettyPrint(JsonOutput.toJson(params)), NORMALYZERDE.out.exp_design, NORMALYZERDE.out.std_prots, NORMALYZERDE.out.std_peps, input_fasta )		  
  //   ch_software_versions = ch_software_versions.mix(NORMALIZERDE.out.version.first().ifEmpty(null))
 //    GET_SOFTWARE_VERSIONS (
 //        ch_software_versions.map { it }.collect()
