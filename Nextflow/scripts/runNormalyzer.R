@@ -61,19 +61,21 @@ peptides <- read.csv("peptide_file.txt", sep="\t", row.names=1)
 proteins <- read.csv("protein_file.txt", sep="\t", row.names=1)
 norm_peptides <- read.csv(paste0("NormalyzerPeptides/", normalyzerMethod, "-normalized.txt"), sep="\t", row.names = 1)
 norm_proteins <- read.csv(paste0("NormalyzerProteins/", normalyzerMethod, "-normalized.txt"), sep="\t", row.names = 1)
+stats_peptides <- read.csv("NormalyzerPeptides/NormalyzerPeptides_stats.tsv", sep="\t", row.names=1)
+stats_proteins <- read.csv("NormalyzerProteins/NormalyzerProteins_stats.tsv", sep="\t", row.names=1)
 
 # changing column names
 peptides$missed_cleavages <- peptides$Missed.cleavages
 peptides$charge <- peptides$Charges
 peptides$protein_group <- peptides$Proteins
-pval_cols <- colnames(peptides)[grep("AdjPVal$", colnames(peptides))]
-colnames(peptides)[grep("AdjPVal$", colnames(peptides))] <- paste0("differential_regulation_", sub("_AdjPVal","", pval_cols))
-pval_cols <- colnames(proteins)[grep("AdjPVal$", colnames(proteins))]
-colnames(proteins)[grep("AdjPVal$", colnames(proteins))] <- paste0("differential_regulation_", sub("_AdjPVal","", pval_cols))
-pval_cols <- colnames(peptides)[grep("PValue$", colnames(peptides))]
-colnames(peptides)[grep("AdjPVal$", colnames(peptides))] <- paste0("differential_regulation_", sub("_PValue","", pval_cols))
-pval_cols <- colnames(proteins)[grep("PValue$", colnames(proteins))]
-colnames(proteins)[grep("PValue$", colnames(proteins))] <- paste0("differential_regulation_", sub("_PValue","", pval_cols))
+pval_cols <- colnames(stats_peptides)[grep("AdjPVal$", colnames(stats_peptides))]
+colnames(stats_peptides)[grep("AdjPVal$", colnames(stats_peptides))] <- paste0("differential_regulation_", sub("_AdjPVal","", pval_cols))
+pval_cols <- colnames(stats_proteins)[grep("AdjPVal$", colnames(stats_proteins))]
+colnames(stats_proteins)[grep("AdjPVal$", colnames(stats_proteins))] <- paste0("differential_regulation_", sub("_AdjPVal","", pval_cols))
+pval_cols <- colnames(stats_peptides)[grep("PValue$", colnames(stats_peptides))]
+colnames(stats_peptides)[grep("AdjPVal$", colnames(stats_peptides))] <- paste0("differential_regulation_", sub("_PValue","", pval_cols))
+pval_cols <- colnames(stats_proteins)[grep("PValue$", colnames(stats_proteins))]
+colnames(stats_proteins)[grep("PValue$", colnames(stats_proteins))] <- paste0("differential_regulation_", sub("_PValue","", pval_cols))
 
 colnames(peptides) <- unlist(sub("^Experiment\\.", "number_of_psms_", colnames(peptides)))
 
@@ -99,10 +101,13 @@ for (s in 1:nrow(final_exp))  {
 
 # getting relevant columns
 norm_peptides[,grep("^abundance_", colnames(norm_peptides), value=T)] <- 2^(norm_peptides[,grep("^abundance_", colnames(norm_peptides), value=T)])
-proteins <- cbind(proteins[rownames(norm_proteins), c("protein_group", grep("^number_of_peptides_", colnames(proteins), value=T), grep("^differential_regulation", colnames(proteins), value=T))],
+proteins <- cbind(proteins[rownames(norm_proteins), c("protein_group", grep("^number_of_peptides_", colnames(proteins), value=T))], 
+                  stats_proteins[rownames(norm_proteins), grep("^differential_regulation", colnames(stats_proteins), value=T)],
                   norm_proteins[,grep("^abundance_", colnames(norm_proteins), value=T)])
-peptides <- cbind(modified_peptide=rownames(norm_peptides), peptides[rownames(norm_peptides), c("protein_group", grep("^number_of_psms_", colnames(peptides), value=T), grep("^differential_regulation", colnames(proteins), value=T))],
-                  norm_peptides[,grep("^abundance_", colnames(norm_peptides), value=T)])
+peptides <- cbind(modified_peptide=rownames(norm_peptides), 
+                  peptides[rownames(norm_peptides), c("protein_group", grep("^number_of_psms_", colnames(peptides), value=T))],
+                  norm_peptides[,grep("^abundance_", colnames(norm_peptides), value=T)],
+                  stats_peptides[rownames(norm_peptides), grep("^differential_regulation", colnames(stats_peptides), value=T)])
 
 
 
