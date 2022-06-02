@@ -99,9 +99,9 @@ for (s in 1:nrow(final_exp))  {
 
 # getting relevant columns
 norm_peptides[,grep("^abundance_", colnames(norm_peptides), value=T)] <- 2^(norm_peptides[,grep("^abundance_", colnames(norm_peptides), value=T)])
-proteins <- cbind(proteins[rownames(norm_proteins), c("protein_group", grep("^number_of_peptides_", colnames(proteins), value=T))],
+proteins <- cbind(proteins[rownames(norm_proteins), c("protein_group", grep("^number_of_peptides_", colnames(proteins), value=T), grep("^differential_regulation", colnames(proteins), value=T))],
                   norm_proteins[,grep("^abundance_", colnames(norm_proteins), value=T)])
-peptides <- cbind(modified_peptide=rownames(norm_peptides), peptides[rownames(norm_peptides), c("protein_group", grep("^number_of_psms_", colnames(peptides), value=T))],
+peptides <- cbind(modified_peptide=rownames(norm_peptides), peptides[rownames(norm_peptides), c("protein_group", grep("^number_of_psms_", colnames(peptides), value=T), grep("^differential_regulation", colnames(proteins), value=T))],
                   norm_peptides[,grep("^abundance_", colnames(norm_peptides), value=T)])
 
 
