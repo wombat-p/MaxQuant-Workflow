@@ -20,7 +20,7 @@ process CALCBENCHMARKS {
         path fasta_file
  
   output:
-   path "params.json",   emit: parameters
+//   path "params.json",   emit: parameters
    path "benchmarks.json",  emit:  benchmarks
   
   script:
