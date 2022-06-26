@@ -29,7 +29,7 @@ input:
     cp "${exp_file}" Normalyzer_design.tsv
     cp "proteinGroups.txt" protein_file.txt
     cp "peptides.txt" peptide_file.txt
-    Rscript $baseDir/scripts/runNormalyzer.R --comps="${params.comparisons}" --method="${normalization}"
+    Rscript $baseDir/scripts/runNormalyzer.R --comps="${params.comps}" --method="${normalization}"
     """
 
 }
