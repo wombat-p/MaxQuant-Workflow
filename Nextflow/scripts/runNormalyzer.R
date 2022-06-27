@@ -73,13 +73,13 @@ peptides$charge <- peptides$Charges
 peptides$protein_group <- peptides$Proteins
 if (!is.null(stats_peptides)) {
   pval_cols <- colnames(stats_peptides)[grep("AdjPVal$", colnames(stats_peptides))]
-  colnames(stats_peptides)[grep("AdjPVal$", colnames(stats_peptides))] <- paste0("differential_regulation_qvalue", sub("_AdjPVal","", pval_cols))
+  colnames(stats_peptides)[grep("AdjPVal$", colnames(stats_peptides))] <- paste0("differential_abundance_qvalue", sub("_AdjPVal","", pval_cols))
   pval_cols <- colnames(stats_proteins)[grep("AdjPVal$", colnames(stats_proteins))]
-  colnames(stats_proteins)[grep("AdjPVal$", colnames(stats_proteins))] <- paste0("differential_regulation_qvalue", sub("_AdjPVal","", pval_cols))
+  colnames(stats_proteins)[grep("AdjPVal$", colnames(stats_proteins))] <- paste0("differential_abundance_qvalue", sub("_AdjPVal","", pval_cols))
   pval_cols <- colnames(stats_peptides)[grep("PValue$", colnames(stats_peptides))]
-  colnames(stats_peptides)[grep("AdjPVal$", colnames(stats_peptides))] <- paste0("differential_regulation_pvalue", sub("_PValue","", pval_cols))
+  colnames(stats_peptides)[grep("AdjPVal$", colnames(stats_peptides))] <- paste0("differential_abundance_pvalue", sub("_PValue","", pval_cols))
   pval_cols <- colnames(stats_proteins)[grep("PValue$", colnames(stats_proteins))]
-  colnames(stats_proteins)[grep("PValue$", colnames(stats_proteins))] <- paste0("differential_regulation_pvalue", sub("_PValue","", pval_cols))
+  colnames(stats_proteins)[grep("PValue$", colnames(stats_proteins))] <- paste0("differential_abundance_pvalue", sub("_PValue","", pval_cols))
 }
 
 colnames(peptides) <- unlist(sub("^Experiment\\.", "number_of_psms_", colnames(peptides)))
