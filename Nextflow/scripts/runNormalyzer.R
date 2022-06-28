@@ -114,12 +114,12 @@ if (is.null(stats_peptides)) {
                   norm_peptides[,grep("^abundance_", colnames(norm_peptides), value=T)])
 } else {
   proteins <- cbind(proteins[rownames(norm_proteins), c("protein_group", grep("^number_of_peptides_", colnames(proteins), value=T))], 
-                  stats_proteins[rownames(norm_proteins), grep("^differential_regulation", colnames(stats_proteins), value=T)],
+                  stats_proteins[rownames(norm_proteins), grep("^differential_abundance", colnames(stats_proteins), value=T)],
                   norm_proteins[,grep("^abundance_", colnames(norm_proteins), value=T)])
   peptides <- cbind(modified_peptide=rownames(norm_peptides), 
                   peptides[rownames(norm_peptides), c("protein_group", grep("^number_of_psms_", colnames(peptides), value=T))],
                   norm_peptides[,grep("^abundance_", colnames(norm_peptides), value=T)],
-                  stats_peptides[rownames(norm_peptides), grep("^differential_regulation", colnames(stats_peptides), value=T)])
+                  stats_peptides[rownames(norm_peptides), grep("^differential_abundance", colnames(stats_peptides), value=T)])
 }
 
 
