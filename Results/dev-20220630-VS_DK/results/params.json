@@ -1,0 +1,38 @@
+{
+    "outdir": "./results",
+    "publish_dir_mode": "copy",
+    "name": false,
+    "email": false,
+    "email_on_fail": false,
+    "plaintext_email": false,
+    "monochrome_logs": false,
+    "help": false,
+    "fasta": "https://raw.githubusercontent.com/wombat-p/MaxQuant-Workflow/dev/data/yeast_UPS.fasta",
+    "sdrf": "https://raw.githubusercontent.com/wombat-p/MaxQuant-Workflow/dev/data/sdrf_UPS.tsv",
+    "max_cpus": 4,
+    "max_memory": "128GB",
+    "tracedir": "./results/pipeline_info",
+    "custom_config_version": "master",
+    "custom_config_base": "https://raw.githubusercontent.com/nf-core/configs/master",
+    "hostnames": false,
+    "config_profile_description": false,
+    "config_profile_contact": false,
+    "config_profile_url": false,
+    "enable_conda": false,
+    "max_time": {
+        "days": 10,
+        "millis": 864000000,
+        "hours": 240,
+        "minutes": 14400,
+        "seconds": 864000,
+        "durationInMillis": 864000000
+    },
+    "parameters": "no_params",
+    "exp_design": "no_exp_design",
+    "raws": "no_raws",
+    "run_statistics": "True",
+    "comps": "",
+    "collected_options": {
+        
+    }
+}

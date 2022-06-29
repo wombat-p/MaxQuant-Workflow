@@ -1,0 +1,5 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	4f/35dd1c	2128863	maxquantpipeline:PREPARE_FILES (1)	CACHED	0	2022-05-23 14:19:07.465	1h 25m 21s	1h 25m 21s	15.5%	75.9 MB	301.4 MB	43.4 GB	43.5 GB
+2	00/90fc86	2150485	maxquantpipeline:SDRFMERGE (1)	COMPLETED	0	2022-05-23 16:04:40.645	14.5s	14.3s	7.2%	106 MB	332 MB	13.8 MB	49.3 KB
+3	22/51e271	2151160	maxquantpipeline:CONVERT_MAXQUANT (1)	COMPLETED	0	2022-05-23 16:04:55.315	5.5s	5.3s	99.2%	106.8 MB	332.3 MB	29.9 MB	22.9 KB
+4	64/c06c42	2151491	maxquantpipeline:MAXQUANT_LFQ (1)	FAILED	1	2022-05-23 16:05:01.038	5.8s	5.8s	-	-	-	-	-
