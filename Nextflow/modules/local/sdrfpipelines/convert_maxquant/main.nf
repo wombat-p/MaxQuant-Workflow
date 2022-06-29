@@ -6,7 +6,7 @@ process CONVERT_MAXQUANT {
         container "https://depot.galaxyproject.org/singularity/sdrf-pipelines:0.0.21"
     } else {
 //        container "quay.io/biocontainers/sdrf-pipelines:0.0.21--py_0"
-        container "wombatp/maxquant-pipeline:dev"
+        container "wombatp/maxquant-pipeline:v0.14"
     }
 
     input:
