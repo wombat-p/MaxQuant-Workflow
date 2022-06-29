@@ -5,7 +5,7 @@ process SDRFMERGE {
     if (workflow.containerEngine == 'singularity' && !params.singularity_pull_docker_container) {
         container "https://depot.galaxyproject.org/singularity/sdrf-pipelines:0.0.21--py_0"
     } else {
-        container "wombatp/maxquant-pipeline:v0.14"
+        container "wombatp/maxquant-pipeline:dev"
     }
 
 

@@ -5,7 +5,7 @@ process PREPARE_FILES {
     if (workflow.containerEngine == 'singularity' && !params.singularity_pull_docker_container) {
         container "https://depot.galaxyproject.org/singularity/python:3.8.3"
     } else {
-        container "wombatp/maxquant-pipeline:v0.14"
+        container "wombatp/maxquant-pipeline:dev"
     }
 
 
