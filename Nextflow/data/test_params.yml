@@ -1,0 +1,34 @@
+params: 
+  fixed_mods: Carbamidomethyl of C
+  variable_mods: Oxidation of M
+  precursor_mass_tolerance: 10 ppm
+  fragment_mass_tolerance: 0.05 Da
+  enzyme: Trypsin
+  fions: a,b
+  rions: y
+  isotope_error_range: 1
+  add_decoys: true
+  num_hits: 1
+  miscleavages: 1
+  min_precursor_charge: 2
+  max_precursor_charge: 3
+  min_peptide_length: 8
+  max_peptide_length: 12
+  max_mods: 4
+  fdr_psm: 0.01
+  fdr_peptide: 0.01
+  fdr_protein: 0.01
+  match_between_runs: True
+  protein_inference: unique
+  quantification_method: precursor
+  summarization_proteins: median
+  min_num_peptides: 2
+  summarization_psms: sum_abs
+  quant_transformation: log
+  normalization_method: median
+  run_statistics: True
+  fdr_method: qvalue
+  fdr_threshold: 0.01
+rawfiles: None
+
+fastafile: None

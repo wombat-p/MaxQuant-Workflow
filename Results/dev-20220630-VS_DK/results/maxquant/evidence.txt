@@ -1,0 +1,1 @@
+/data/NextFlow/MaxQuant-Workflow/Nextflow/work/ec/b9b16defee420c3cd787262ea32fa5/evidence.txt
