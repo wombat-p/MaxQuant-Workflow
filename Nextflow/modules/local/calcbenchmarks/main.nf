@@ -6,7 +6,7 @@ process CALCBENCHMARKS {
     publishDir "${params.outdir}/", mode:'copy'
     conda (params.enable_conda ? "conda-forge::notyetavailable" : null)
     if (workflow.containerEngine == 'singularity' && !params.singularity_pull_docker_container) {
-        container "https://depot.galaxyproject.org/singularity/notyetavailable"
+        container "docker://wombatp/maxquant-pipeline:dev"
     } else {
         container "wombatp/maxquant-pipeline:dev"
     }

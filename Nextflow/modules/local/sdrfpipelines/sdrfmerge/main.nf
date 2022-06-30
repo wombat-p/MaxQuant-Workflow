@@ -3,7 +3,7 @@ process SDRFMERGE {
     label 'process_medium'
     conda (params.enable_conda ? "bioconda::sdrf-pipelines=0.0.21" : null)
     if (workflow.containerEngine == 'singularity' && !params.singularity_pull_docker_container) {
-        container "https://depot.galaxyproject.org/singularity/sdrf-pipelines:0.0.21--py_0"
+        container "docker://wombatp/maxquant-pipeline:dev"
     } else {
         container "wombatp/maxquant-pipeline:dev"
     }
