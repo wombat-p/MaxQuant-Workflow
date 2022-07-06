@@ -16,7 +16,8 @@ process CONVERT_MAXQUANT {
 
     output:
     path "mqpar.xml"         , emit: maxquantpar
-    path "exp_design.tsv"         , emit: exp_design
+    path "Normalyzer_design.tsv"         , emit: exp_design
+    path "Normalyzer_comparisons.txt"     , emit: comp_file
     path "*.version.txt"          , emit: version
 
     script:
@@ -34,6 +35,8 @@ process CONVERT_MAXQUANT {
     parse_sdrf \\
     convert-normalyzerde \\
     -s "${sdrf}" \\
-    -o exp_design.tsv
+    -mq exp_design.tsv \\
+    -o Normalyzer_design.tsv \\
+    -oc Normalyzer_comparisons.txt
     """
 }
