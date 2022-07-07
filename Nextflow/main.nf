@@ -216,7 +216,7 @@ include { CALCBENCHMARKS }                  from './modules/local/calcbenchmarks
 workflow maxquantpipeline {
     ch_software_versions = Channel.empty()
     PREPARE_FILES (input_sdrf, input_parameters, input_exp_design, input_raws.collect(), ch_sdrfmapping)
-    SDRFMERGE (PREPARE_FILES.out.sdrf_local, PREPARE_FILES.out.params, ch_sdrfmapping)
+    SDRFMERGE (PREPARE_FILES.out.sdrf_local, PREPARE_FILES.out.parameters, ch_sdrfmapping)
     CONVERT_MAXQUANT (SDRFMERGE.out.sdrf_local, input_fasta)
     MAXQUANT_LFQ ( input_fasta , CONVERT_MAXQUANT.out.maxquantpar, PREPARE_FILES.out.raws.collect() )
     NORMALYZERDE (MAXQUANT_LFQ.out.maxquant_txt, CONVERT_MAXQUANT.out.exp_design, CONVERT_MAXQUANT.out.comp_file, 

@@ -127,6 +127,6 @@ out_yaml["variable_mods"] = ",".join(variable_mods)
 
 
 print("--- Writing sdrf file into params.yml ---")
-with open('params.yml', 'w') as outfile:
+with open('params_out.yml', 'w') as outfile:
     yaml.dump(out_yaml, outfile, default_flow_style=False)
     

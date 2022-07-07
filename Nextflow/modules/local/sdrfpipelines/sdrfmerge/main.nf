@@ -12,8 +12,7 @@ process SDRFMERGE {
     input:
       path sdrf
       path parameters
-      path map
-     
+      path map    
 
     output:
       path "sdrf_local.tsv"         , emit: sdrf_local

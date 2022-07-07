@@ -1,5 +1,5 @@
 process PREPARE_FILES { 
-    publishDir "${params.outdir}/sdrfmerge"
+    publishDir "${params.outdir}/prepare_files"
     label 'process_medium'
     conda (params.enable_conda ? "conda-forge::python-3.8.3" : null)
     if (workflow.containerEngine == 'singularity' && !params.singularity_pull_docker_container) {
@@ -20,7 +20,7 @@ process PREPARE_FILES {
     output:
       path "sdrf_local.tsv" , includeInputs:true         , emit: sdrf_local
       path "exp_design.txt" , includeInputs:true	    , emit: exp_design
-      path "params.yml" , includeInputs:true		    , emit: params
+      path "params.yml" , includeInputs:true		    , emit: parameters
       path "*.version.txt" , includeInputs:true          , emit: version
       path "{*.raw,*.RAW}" , includeInputs:true	    , emit: raws
 
