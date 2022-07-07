@@ -1,0 +1,5 @@
+enzyme: trypsin/P
+fixed_mods: Carbamidomethyl of C
+fragment_mass_tolerance: '0.8'
+precursor_mass_tolerance: '5'
+variable_mods: Oxidation of M,Acetyl of Protein N-term
