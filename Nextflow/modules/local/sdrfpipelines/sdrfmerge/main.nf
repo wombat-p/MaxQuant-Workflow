@@ -16,7 +16,6 @@ process SDRFMERGE {
 
     output:
       path "sdrf_local.tsv"         , emit: sdrf_local
-      path "*.version.txt"          , emit: version
 
 
     script:
@@ -36,6 +35,5 @@ process SDRFMERGE {
     # TODO change to package when available
     python $projectDir/scripts/add_data_analysis_param.py
     python $projectDir/scripts/sdrf2params.py
-    echo "preliminary version" > sdrf-merge.version.txt
     """
 }
