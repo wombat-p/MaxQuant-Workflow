@@ -1,3 +1,0 @@
-raw_file	exp_condition
-OVEMB150205_12.raw	A
-OVEMB150205_14.raw	B

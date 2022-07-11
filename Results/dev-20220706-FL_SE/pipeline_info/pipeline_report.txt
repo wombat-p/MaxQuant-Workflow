@@ -1,0 +1,50 @@
+----------------------------------------------------
+                                        ,--./,-.
+        ___     __   __   __   ___     /,-._.--~\
+  |\ | |__  __ /  ` /  \ |__) |__         }  {
+  | \| |       \__, \__/ |  \ |___     \`-._,-`-,
+                                        `._,._,'
+  nf-core/wombatp v1.0dev
+----------------------------------------------------
+
+Run Name: stoic_brenner
+
+## nf-core/wombatp execution completed successfully! ##
+
+
+The workflow was completed at 2022-07-06T19:00:08.638460Z (duration: 8h 25m 7s)
+
+The command used to launch the workflow was as follows:
+
+  nextflow run main.nf --raws '/mnt/data/RAW/*.raw' --fasta 'https://raw.githubusercontent.com/wombat-p/MaxQuant-Workflow/dev/data/yeast_UPS.fasta' --sdrf /mnt/data/wombat/MaxQuant-Workflow/Nextflow/data_test/sdrf_UPS.tsv --max_cpus 8 --max_memory 15GB -profile singularity -with-report -with-trace -with-timeline
+
+
+
+Pipeline Configuration:
+-----------------------
+ - Run Name: stoic_brenner
+ - Raw files: /mnt/data/RAW/*.raw
+ - Fasta database: https://raw.githubusercontent.com/wombat-p/MaxQuant-Workflow/dev/data/yeast_UPS.fasta
+ - SDRF file: /mnt/data/wombat/MaxQuant-Workflow/Nextflow/data_test/sdrf_UPS.tsv
+ - Parameter file: no_params
+ - Experimental design file: no_exp_design
+ - Max Resources: 15GB memory, 8 cpus, 10d time per job
+ - Container: singularity - nfcore/wombatp:dev
+ - Output dir: ./results
+ - Launch dir: /mnt/data/wombat/MaxQuant-Workflow/Nextflow
+ - Working dir: /mnt/data/wombat/MaxQuant-Workflow/Nextflow/work
+ - Script dir: /mnt/data/wombat/MaxQuant-Workflow/Nextflow
+ - User: ubuntu
+ - Config Profile: singularity
+ - Config Files: /mnt/data/wombat/MaxQuant-Workflow/Nextflow/nextflow.config
+ - Date Started: 2022-07-06T10:35:01.671129Z
+ - Date Completed: 2022-07-06T19:00:08.638460Z
+ - Pipeline script file path: /mnt/data/wombat/MaxQuant-Workflow/Nextflow/main.nf
+ - Pipeline script hash ID: 064aa8a1accf082186fcbe8dacb308a7
+ - Nextflow Version: 22.04.4
+ - Nextflow Build: 5706
+ - Nextflow Compile Timestamp: 19-06-2022 20:51 UTC
+
+--
+nf-core/wombatp
+https://github.com/nf-core/wombatp

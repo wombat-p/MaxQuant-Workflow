@@ -3,7 +3,7 @@ process SDRFMERGE {
     label 'process_medium'
     conda (params.enable_conda ? "bioconda::sdrf-pipelines=0.0.21" : null)
     if (workflow.containerEngine == 'singularity' && !params.singularity_pull_docker_container) {
-        container "https://depot.galaxyproject.org/singularity/sdrf-pipelines:0.0.21--py_0"
+        container "docker://wombatp/maxquant-pipeline:dev"
     } else {
         container "wombatp/maxquant-pipeline:v0.14"
     }
@@ -12,12 +12,10 @@ process SDRFMERGE {
     input:
       path sdrf
       path parameters
-      path map
-     
+      path map    
 
     output:
       path "sdrf_local.tsv"         , emit: sdrf_local
-      path "*.version.txt"          , emit: version
 
 
     script:
@@ -37,6 +35,5 @@ process SDRFMERGE {
     # TODO change to package when available
     python $projectDir/scripts/add_data_analysis_param.py
     python $projectDir/scripts/sdrf2params.py
-    echo "preliminary version" > sdrf-merge.version.txt
     """
 }
