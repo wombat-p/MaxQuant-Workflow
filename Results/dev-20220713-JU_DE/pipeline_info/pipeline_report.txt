@@ -1,0 +1,50 @@
+----------------------------------------------------
+                                        ,--./,-.
+        ___     __   __   __   ___     /,-._.--~\
+  |\ | |__  __ /  ` /  \ |__) |__         }  {
+  | \| |       \__, \__/ |  \ |___     \`-._,-`-,
+                                        `._,._,'
+  nf-core/wombatp v1.0dev
+----------------------------------------------------
+
+Run Name: serene_ptolemy
+
+## nf-core/wombatp execution completed successfully! ##
+
+
+The workflow was completed at 2022-07-12T22:42:47.145642+02:00 (duration: 8h 28m 13s)
+
+The command used to launch the workflow was as follows:
+
+  nextflow run /mnt/data/julians-data/wombat-p/MaxQuant-Workflow/Nextflow/main.nf --fasta 'https://raw.githubusercontent.com/wombat-p/MaxQuant-Workflow/dev/data/yeast_UPS.fasta' --sdrf 'https://raw.githubusercontent.com/wombat-p/MaxQuant-Workflow/dev/data/sdrf_UPS.tsv' --max_cpus 4 --max_memory 64GB -profile docker -with-report -with-trace -with-timeline
+
+
+
+Pipeline Configuration:
+-----------------------
+ - Run Name: serene_ptolemy
+ - Raw files: no_raws
+ - Fasta database: https://raw.githubusercontent.com/wombat-p/MaxQuant-Workflow/dev/data/yeast_UPS.fasta
+ - SDRF file: https://raw.githubusercontent.com/wombat-p/MaxQuant-Workflow/dev/data/sdrf_UPS.tsv
+ - Parameter file: no_params
+ - Experimental design file: no_exp_design
+ - Max Resources: 64GB memory, 4 cpus, 10d time per job
+ - Container: docker - nfcore/wombatp:dev
+ - Output dir: ./results
+ - Launch dir: /mnt/data/julians-data/wombat-p/local-work/MaxQuant-Workflow
+ - Working dir: /mnt/data/julians-data/wombat-p/local-work/MaxQuant-Workflow/work
+ - Script dir: /mnt/data/julians-data/wombat-p/MaxQuant-Workflow/Nextflow
+ - User: julian
+ - Config Profile: docker
+ - Config Files: /mnt/data/julians-data/wombat-p/MaxQuant-Workflow/Nextflow/nextflow.config
+ - Date Started: 2022-07-12T14:14:33.988602+02:00
+ - Date Completed: 2022-07-12T22:42:47.145642+02:00
+ - Pipeline script file path: /mnt/data/julians-data/wombat-p/MaxQuant-Workflow/Nextflow/main.nf
+ - Pipeline script hash ID: 3668aab0458d2dce5552f18e5f1755f3
+ - Nextflow Version: 21.10.6
+ - Nextflow Build: 5660
+ - Nextflow Compile Timestamp: 21-12-2021 16:55 UTC
+
+--
+nf-core/wombatp
+https://github.com/nf-core/wombatp
