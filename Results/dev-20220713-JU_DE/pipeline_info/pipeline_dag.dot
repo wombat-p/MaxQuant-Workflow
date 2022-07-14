@@ -1,0 +1,162 @@
+digraph "pipeline_dag" {
+p0 [shape=point,label="",fixedsize=true,width=0.1,xlabel="Channel.fromPath"];
+p12 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="collect"];
+p0 -> p12 [label="input_raws"];
+
+p1 [shape=point,label="",fixedsize=true,width=0.1,xlabel="Channel.from"];
+p19 [label="maxquantpipeline:CONVERT_MAXQUANT"];
+p1 -> p19 [label="input_fasta"];
+
+p2 [shape=point,label="",fixedsize=true,width=0.1,xlabel="Channel.fromPath"];
+p14 [label="maxquantpipeline:PREPARE_FILES"];
+p2 -> p14 [label="input_sdrf"];
+
+p3 [shape=point,label="",fixedsize=true,width=0.1,xlabel="Channel.fromPath"];
+p14 [label="maxquantpipeline:PREPARE_FILES"];
+p3 -> p14 [label="input_parameters"];
+
+p4 [shape=point,label="",fixedsize=true,width=0.1,xlabel="Channel.fromPath"];
+p14 [label="maxquantpipeline:PREPARE_FILES"];
+p4 -> p14 [label="input_exp_design"];
+
+p5 [shape=point,label="",fixedsize=true,width=0.1,xlabel="Channel.from"];
+p6 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p5 -> p6;
+
+p6 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p7 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="reduce"];
+p6 -> p7;
+
+p7 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="reduce"];
+p8 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p7 -> p8;
+
+p8 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p9 [shape=point];
+p8 -> p9 [label="ch_workflow_summary"];
+
+p10 [shape=point,label="",fixedsize=true,width=0.1,xlabel="Channel.empty"];
+p11 [shape=point];
+p10 -> p11 [label="ch_software_versions"];
+
+p12 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="collect"];
+p14 [label="maxquantpipeline:PREPARE_FILES"];
+p12 -> p14;
+
+p13 [shape=point,label="",fixedsize=true,width=0.1];
+p14 [label="maxquantpipeline:PREPARE_FILES"];
+p13 -> p14 [label="map"];
+
+p14 [label="maxquantpipeline:PREPARE_FILES"];
+p18 [label="maxquantpipeline:SDRFMERGE"];
+p14 -> p18;
+
+p14 [label="maxquantpipeline:PREPARE_FILES"];
+p16 [shape=point];
+p14 -> p16;
+
+p14 [label="maxquantpipeline:PREPARE_FILES"];
+p18 [label="maxquantpipeline:SDRFMERGE"];
+p14 -> p18;
+
+p14 [label="maxquantpipeline:PREPARE_FILES"];
+p15 [shape=point];
+p14 -> p15;
+
+p14 [label="maxquantpipeline:PREPARE_FILES"];
+p21 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="collect"];
+p14 -> p21;
+
+p17 [shape=point,label="",fixedsize=true,width=0.1];
+p18 [label="maxquantpipeline:SDRFMERGE"];
+p17 -> p18 [label="map"];
+
+p18 [label="maxquantpipeline:SDRFMERGE"];
+p19 [label="maxquantpipeline:CONVERT_MAXQUANT"];
+p18 -> p19;
+
+p19 [label="maxquantpipeline:CONVERT_MAXQUANT"];
+p22 [label="maxquantpipeline:MAXQUANT_LFQ"];
+p19 -> p22;
+
+p19 [label="maxquantpipeline:CONVERT_MAXQUANT"];
+p27 [label="maxquantpipeline:NORMALYZERDE"];
+p19 -> p27;
+
+p19 [label="maxquantpipeline:CONVERT_MAXQUANT"];
+p27 [label="maxquantpipeline:NORMALYZERDE"];
+p19 -> p27;
+
+p19 [label="maxquantpipeline:CONVERT_MAXQUANT"];
+p20 [shape=point];
+p19 -> p20;
+
+p21 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="collect"];
+p22 [label="maxquantpipeline:MAXQUANT_LFQ"];
+p21 -> p22;
+
+p1 [shape=point,label="",fixedsize=true,width=0.1,xlabel="Channel.from"];
+p22 [label="maxquantpipeline:MAXQUANT_LFQ"];
+p1 -> p22 [label="input_fasta"];
+
+p22 [label="maxquantpipeline:MAXQUANT_LFQ"];
+p27 [label="maxquantpipeline:NORMALYZERDE"];
+p22 -> p27;
+
+p22 [label="maxquantpipeline:MAXQUANT_LFQ"];
+p23 [shape=point];
+p22 -> p23;
+
+p18 [label="maxquantpipeline:SDRFMERGE"];
+p24 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="splitCsv"];
+p18 -> p24;
+
+p24 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="splitCsv"];
+p25 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p24 -> p25;
+
+p25 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p26 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="unique"];
+p25 -> p26;
+
+p26 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="unique"];
+p27 [label="maxquantpipeline:NORMALYZERDE"];
+p26 -> p27;
+
+p27 [label="maxquantpipeline:NORMALYZERDE"];
+p32 [label="maxquantpipeline:CALCBENCHMARKS"];
+p27 -> p32;
+
+p27 [label="maxquantpipeline:NORMALYZERDE"];
+p30 [shape=point];
+p27 -> p30;
+
+p27 [label="maxquantpipeline:NORMALYZERDE"];
+p29 [shape=point];
+p27 -> p29;
+
+p27 [label="maxquantpipeline:NORMALYZERDE"];
+p32 [label="maxquantpipeline:CALCBENCHMARKS"];
+p27 -> p32;
+
+p27 [label="maxquantpipeline:NORMALYZERDE"];
+p32 [label="maxquantpipeline:CALCBENCHMARKS"];
+p27 -> p32;
+
+p27 [label="maxquantpipeline:NORMALYZERDE"];
+p28 [shape=point];
+p27 -> p28;
+
+p31 [shape=point,label="",fixedsize=true,width=0.1];
+p32 [label="maxquantpipeline:CALCBENCHMARKS"];
+p31 -> p32 [label="foo"];
+
+p1 [shape=point,label="",fixedsize=true,width=0.1,xlabel="Channel.from"];
+p32 [label="maxquantpipeline:CALCBENCHMARKS"];
+p1 -> p32 [label="input_fasta"];
+
+p32 [label="maxquantpipeline:CALCBENCHMARKS"];
+p33 [shape=point];
+p32 -> p33;
+
+}
