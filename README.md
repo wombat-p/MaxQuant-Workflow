@@ -1,3 +1,8 @@
+# Update
+This project and workflow has been merged into the WOMBAT pipelines.
+
+Please go to https://github.com/wombat-p/WOMBAT-Pipelines
+
 # Workflow to analyze label-free data with MaxQuant
 This workflow is based on Nextflow, running with SDRF implemented. Normalization and statistical comparisons using NormalyzerDE are conducted on the MaxQuant results.
 
